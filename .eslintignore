@@ -1,0 +1,5 @@
+node_modules
+.vscode
+.expo
+metro.config.js
+babel.config.js

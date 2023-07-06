@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "Pulse for Lemmy",
+    "slug": "PulseForLemmy",
+    "scheme": "pulse",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff",
+      "dark": {
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "userInterfaceStyle": "light",
+      "bundleIdentifier": "com.pedromcdp.pulse"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "userInterfaceStyle": "light",
+      "package": "com.pedromcdp.pulse"
+    },
+    "plugins": [],
+    "extra": {
+      "eas": {
+        "projectId": "dff75167-02c8-43c5-ab19-45e85555834d"
+      }
+    },
+    "owner": "pedromcdp"
+  }
+}
