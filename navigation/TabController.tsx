@@ -13,7 +13,8 @@ import Home from '@/screens/Home';
 import Inbox from '@/screens/Inbox';
 import Search from '@/screens/Search';
 import Settings from '@/screens/Settings';
-import { get, set } from '@/services/Storage';
+import Storage from '@/services/Storage';
+import { useAppearanceStore } from '@/stores/AppearanceStore';
 
 const TabCobtroller = createBottomTabNavigator();
 const FeedStack = createNativeStackNavigator();
@@ -25,22 +26,33 @@ const SettingsStack = createNativeStackNavigator();
 const TabRoutes = () => {
   const { data: userData } = useGetUserDetails('pmcdp');
   const [user, setUser] = useState<GetPersonDetailsResponse | null>(null);
+  const { setSettings } = useAppearanceStore((state) => state);
 
   useEffect(() => {
     if (userData) {
-      set('user', JSON.stringify(userData));
+      Storage.set('user', JSON.stringify(userData));
       setUser(userData);
     }
   }, [userData]);
 
   useEffect(() => {
     const getUser = async () => {
-      const storedUser = await get('user').then((res) => JSON.parse(res));
+      const storedUser = await Storage.get('user').then((res) =>
+        JSON.parse(res)
+      );
       if (storedUser) {
         setUser(storedUser);
       }
     };
     getUser();
+  }, []);
+
+  useEffect(() => {
+    Storage.get('appearance').then((res) => {
+      if (res) {
+        setSettings(res);
+      }
+    });
   }, []);
 
   return (

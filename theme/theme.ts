@@ -45,7 +45,12 @@ const theme = createTheme({
   },
   textVariants: {
     default: {
-      fontSize: 20,
+      fontSize: 17,
+      color: 'black',
+      fontWeight: '400',
+    },
+    subtitle: {
+      fontSize: 15,
       color: 'black',
       fontWeight: '400',
     },

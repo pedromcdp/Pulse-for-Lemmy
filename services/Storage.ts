@@ -14,4 +14,4 @@ const set = async (key: string, value: any) => {
   }
 };
 
-export { get, set };
+export default { get, set };

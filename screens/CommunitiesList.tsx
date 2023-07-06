@@ -23,7 +23,8 @@ import { SortAndOrderAlphabetically } from '@/helpers/Sort&OrderAlphabetically';
 import type { IAlphabeticlyOrderedCommunities } from '@/hooks/useGetComunites';
 import { useSubcribedComunitesList } from '@/hooks/useGetComunites';
 import { lemmyAuthToken } from '@/services/LemmyService';
-import { get, set } from '@/services/Storage';
+import Storage from '@/services/Storage';
+import { useAppearanceStore } from '@/stores/AppearanceStore';
 import type { Theme } from '@/theme/theme';
 
 interface ICommunitiesProps {
@@ -44,6 +45,7 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
     IAlphabeticlyOrderedCommunities[] | undefined
   >();
   const [isFetching, setIsFetching] = useState(false);
+  const { showIcons } = useAppearanceStore((state) => state.settings);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -57,7 +59,7 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
   }, []);
 
   useEffect(() => {
-    get('userCommunities').then((res) => {
+    Storage.get('userCommunities').then((res) => {
       if (res) {
         const retrievedData = JSON.parse(res);
         setAlphabeticallySorted(retrievedData);
@@ -101,7 +103,7 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
     if (data) {
       if (data.length > 0) {
         const sorted = SortAndOrderAlphabetically(data);
-        set('userCommunities', JSON.stringify(sorted));
+        Storage.set('userCommunities', JSON.stringify(sorted));
         setAlphabeticallySorted(sorted);
       }
     }
@@ -114,17 +116,20 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
     });
   }, [refetch]);
 
-  const handleRenderItem = useCallback(({ item }: IRenderItemsProps) => {
-    return (
-      <CommunityCell
-        title={item.community.title}
-        subtitle={`${item.community.name} · ${
-          item.community.actor_id.split('//')[1]?.split('/')[0]
-        } `}
-        image={item.community.icon}
-      />
-    );
-  }, []);
+  const handleRenderItem = useCallback(
+    ({ item }: IRenderItemsProps) => {
+      return (
+        <CommunityCell
+          title={item.community.title}
+          subtitle={`${item.community.name} · ${
+            item.community.actor_id.split('//')[1]?.split('/')[0]
+          } `}
+          image={item.community.icon}
+        />
+      );
+    },
+    [showIcons]
+  );
 
   const handleRenderSectionHeader = useCallback(
     ({ section: { letter } }: ISectionListProps) => {

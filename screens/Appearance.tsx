@@ -4,8 +4,10 @@ import { Switch } from 'react-native';
 import { Cell } from '@/components/cells';
 import { ScrollView } from '@/components/core/ScrollView';
 import { Text } from '@/components/core/Text';
+import { useAppearanceStore } from '@/stores/AppearanceStore';
 
 const Appearance = () => {
+  const { settings, setSettings } = useAppearanceStore((state) => state);
   // const [value, setValue] = useState(0); // State to store the current value of the slider
 
   // marks = [0, 25, 50, 75, 100];
@@ -32,19 +34,20 @@ const Appearance = () => {
       paddingTop="xl"
       paddingHorizontal="l"
     >
-      <Text pb="s" textTransform="uppercase" color="gray" paddingLeft="l">
+      <Text pb="xs" textTransform="uppercase" color="gray" paddingLeft="l">
         System
       </Text>
       <Cell
         title="Use System Light/Dark Mode"
         index={0}
         maxIndex={0}
+        smallPadding
         customRight={<Switch />}
       />
 
       <Text
         pt="l"
-        pb="s"
+        pb="xs"
         textTransform="uppercase"
         color="gray"
         paddingLeft="l"
@@ -55,12 +58,20 @@ const Appearance = () => {
         title="Use System Text Size"
         index={0}
         maxIndex={0}
-        customRight={<Switch />}
+        smallPadding
+        customRight={
+          <Switch
+            value={settings.systemFont}
+            onValueChange={(value) =>
+              setSettings({ ...settings, systemFont: value })
+            }
+          />
+        }
       />
 
       <Text
         pt="l"
-        pb="s"
+        pb="xs"
         textTransform="uppercase"
         color="gray"
         paddingLeft="l"
@@ -71,7 +82,15 @@ const Appearance = () => {
         title="Show Community Icons"
         index={0}
         maxIndex={0}
-        customRight={<Switch />}
+        smallPadding
+        customRight={
+          <Switch
+            value={settings.showIcons}
+            onValueChange={(value) =>
+              setSettings({ ...settings, showIcons: value })
+            }
+          />
+        }
       />
       {/* <Box
         backgroundColor="white"

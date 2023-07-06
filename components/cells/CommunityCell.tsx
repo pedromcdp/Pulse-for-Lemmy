@@ -4,7 +4,9 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Image } from 'expo-image';
 import { memo } from 'react';
 
+import { useAppearanceStore } from '@/stores/AppearanceStore';
 import type { Theme } from '@/theme/theme';
+import theme from '@/theme/theme';
 
 import { Box } from '../core/Box';
 import Button from '../core/Button';
@@ -32,6 +34,9 @@ const CommunityCell = memo(
   }: ICommunityCellProps) => {
     const navigation =
       useNavigation<NativeStackNavigationProp<ParamListBase>>();
+    const { showIcons, systemFont } = useAppearanceStore(
+      (state) => state.settings
+    );
 
     return (
       <Button
@@ -43,7 +48,7 @@ const CommunityCell = memo(
           navigation.navigate(icon ? 'Home' : 'Community', { title })
         }
       >
-        {(icon ?? image) && (
+        {icon && (
           <Box
             backgroundColor={iconBgColor}
             alignItems="center"
@@ -54,18 +59,19 @@ const CommunityCell = memo(
             mr="l"
           >
             {icon ?? null}
-            {image && (
-              <Image
-                source={{ uri: image }}
-                contentFit="contain"
-                style={{
-                  width: 35,
-                  height: 35,
-                  borderRadius: 20,
-                }}
-              />
-            )}
           </Box>
+        )}
+        {showIcons && image && (
+          <Image
+            source={{ uri: image }}
+            contentFit="contain"
+            style={{
+              width: 35,
+              height: 35,
+              borderRadius: 20,
+              marginRight: theme.spacing.l,
+            }}
+          />
         )}
         <Box
           flexDirection="row"
@@ -78,11 +84,15 @@ const CommunityCell = memo(
           borderBottomColor="ligthGray"
         >
           <Box>
-            <Text fontSize={17} paddingBottom="xxs">
+            <Text
+              fontSize={17}
+              paddingBottom="xxs"
+              allowFontScaling={systemFont}
+            >
               {title}
             </Text>
             {subtitle && (
-              <Text fontSize={15} color="gray">
+              <Text fontSize={15} color="gray" allowFontScaling={systemFont}>
                 {subtitle}
               </Text>
             )}

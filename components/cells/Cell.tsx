@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import { memo } from 'react';
+import React, { memo } from 'react';
 
+import { useAppearanceStore } from '@/stores/AppearanceStore';
 import theme from '@/theme/theme';
 
 import { Box } from '../core/Box';
@@ -34,6 +35,7 @@ interface ICellProps {
   onPress?: () => void;
   showChevron?: boolean;
   customRight?: React.ReactNode;
+  smallPadding?: boolean;
 }
 
 const Cell = memo(
@@ -45,9 +47,13 @@ const Cell = memo(
     maxIndex,
     customRight = false,
     onPress,
+    smallPadding,
   }: ICellProps) => {
+    const { systemFont } = useAppearanceStore((state) => state.settings);
+    const Component = onPress ? Button : Box;
+
     return (
-      <Button
+      <Component
         flexDirection="row"
         width="100%"
         paddingLeft="l"
@@ -75,7 +81,7 @@ const Cell = memo(
           flexDirection="row"
           alignItems="center"
           justifyContent="space-between"
-          paddingVertical={subtitle ? 's' : 'm'}
+          paddingVertical={subtitle ?? smallPadding ? 's' : 'm'}
           flexGrow={1}
           paddingRight="l"
           marginLeft={icon ? 'l' : undefined}
@@ -83,11 +89,15 @@ const Cell = memo(
           borderBottomColor="divider"
         >
           <Box>
-            <Text fontSize={17} paddingBottom="xxs">
+            <Text
+              fontSize={17}
+              paddingBottom="xxs"
+              allowFontScaling={systemFont}
+            >
               {title}
             </Text>
             {subtitle && (
-              <Text fontSize={15} color="gray">
+              <Text fontSize={15} color="gray" allowFontScaling={systemFont}>
                 {subtitle}
               </Text>
             )}
@@ -102,7 +112,7 @@ const Cell = memo(
             customRight
           )}
         </Box>
-      </Button>
+      </Component>
     );
   }
 );
