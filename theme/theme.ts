@@ -7,6 +7,10 @@ const theme = createTheme({
   colors: {
     primaryBG: palette.white,
     secondaryBG: palette.ligthGray,
+    accent: palette.blue,
+    text: palette.black,
+    subtitle: palette.gray,
+    cellColor: palette.white,
     white: palette.white,
     black: palette.black,
     blue: palette.blue,
@@ -46,13 +50,16 @@ const theme = createTheme({
   textVariants: {
     default: {
       fontSize: 17,
-      color: 'black',
       fontWeight: '400',
     },
     subtitle: {
       fontSize: 15,
-      color: 'black',
       fontWeight: '400',
+    },
+    title: {
+      fontSize: 17,
+      fontWeight: '600',
+      marginBottom: 'xxxxs',
     },
   },
   buttonVariants: {

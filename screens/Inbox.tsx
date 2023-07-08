@@ -3,6 +3,7 @@ import { useLayoutEffect } from 'react';
 
 import { Box } from '@/components/core/Box';
 import { Text } from '@/components/core/Text';
+import { useAppearanceStore } from '@/stores/AppearanceStore';
 
 interface IInboxProps {
   navigation: NativeStackNavigationProp<any>;
@@ -14,6 +15,7 @@ const Inbox = ({ navigation }: IInboxProps) => {
       title: 'Boxes',
     });
   }, [navigation]);
+  const { systemFont } = useAppearanceStore((state) => state.settings);
 
   return (
     <Box
@@ -22,8 +24,8 @@ const Inbox = ({ navigation }: IInboxProps) => {
       paddingHorizontal="l"
       paddingTop="l"
     >
-      <Text fontSize={17} paddingBottom="xxs" allowFontScaling={false}>
-        Use System Light/Dark Mode
+      <Text fontSize={17} allowFontScaling={systemFont}>
+        Home
       </Text>
     </Box>
   );

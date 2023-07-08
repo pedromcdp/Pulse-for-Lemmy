@@ -41,6 +41,7 @@ const CommunityCell = memo(
     return (
       <Button
         flexDirection="row"
+        backgroundColor="primaryBG"
         width="100%"
         paddingLeft="l"
         alignItems="center"
@@ -85,14 +86,19 @@ const CommunityCell = memo(
         >
           <Box>
             <Text
-              fontSize={17}
+              fontSize={16}
               paddingBottom="xxs"
               allowFontScaling={systemFont}
+              color="text"
             >
               {title}
             </Text>
             {subtitle && (
-              <Text fontSize={15} color="gray" allowFontScaling={systemFont}>
+              <Text
+                fontSize={15}
+                color="subtitle"
+                allowFontScaling={systemFont}
+              >
                 {subtitle}
               </Text>
             )}

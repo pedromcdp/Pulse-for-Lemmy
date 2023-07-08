@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { ThemeProvider } from '@shopify/restyle';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
-import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 
 import TabRoutes from './navigation/TabController';
@@ -49,7 +48,6 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <NavigationContainer>
-          <StatusBar style={theme.statusBar.barStyle} />
           <TabRoutes />
         </NavigationContainer>
       </ThemeProvider>

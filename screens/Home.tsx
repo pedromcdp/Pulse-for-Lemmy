@@ -2,6 +2,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack/lib/typescript/src/types';
+import { useTheme } from '@shopify/restyle';
 import React, { useLayoutEffect } from 'react';
 import {
   ActionSheetIOS,
@@ -15,7 +16,7 @@ import { Box } from '@/components/core/Box';
 import Button from '@/components/core/Button';
 import { Text } from '@/components/core/Text';
 import { palette } from '@/constants/colors';
-import theme from '@/theme/theme';
+import type { Theme } from '@/theme/theme';
 
 interface IHomeProps {
   navigation: NativeStackNavigationProp<any>;
@@ -23,7 +24,9 @@ interface IHomeProps {
 }
 
 const Home = ({ navigation, route }: IHomeProps) => {
+  const theme = useTheme<Theme>();
   const [showSearchHeader, setShowSearchHeader] = React.useState(false);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       title: route.params?.title ?? 'Home',
@@ -44,20 +47,17 @@ const Home = ({ navigation, route }: IHomeProps) => {
           <Button
             flexDirection="row"
             ml="xs"
-            onPress={() => setShowSearchHeader(true)}
+            onPressIn={() => setShowSearchHeader(true)}
+            py="m"
+            px="l"
           >
-            <Text
-              mb="xxxxs"
-              fontWeight="600"
-              fontSize={17}
-              allowFontScaling={false}
-            >
+            <Text variant="title" allowFontScaling={false} color="text">
               {children}
             </Text>
             <Ionicons
               name="ios-chevron-down-sharp"
               size={17}
-              color="black"
+              color={theme.colors.text}
               style={{ marginTop: 2 }}
             />
           </Button>
@@ -72,8 +72,6 @@ const Home = ({ navigation, route }: IHomeProps) => {
             flexDirection="row"
             ml="xs"
             onPress={() => setShowSearchHeader(false)}
-            // ml="xs"
-            // backgroundColor="red"
           >
             <Text fontSize={17} allowFontScaling={false} color="blue">
               Cancel

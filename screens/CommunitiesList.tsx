@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTheme } from '@shopify/restyle';
 import type { CommunityView } from 'lemmy-js-client';
 import React, {
   useCallback,
@@ -13,7 +14,6 @@ import {
   FlatList,
   RefreshControl,
   SectionList,
-  StyleSheet,
 } from 'react-native';
 
 import { CellSeparator, CommunityCell } from '@/components/cells';
@@ -24,7 +24,7 @@ import type { IAlphabeticlyOrderedCommunities } from '@/hooks/useGetComunites';
 import { useSubcribedComunitesList } from '@/hooks/useGetComunites';
 import { lemmyAuthToken } from '@/services/LemmyService';
 import Storage from '@/services/Storage';
-import { useAppearanceStore } from '@/stores/AppearanceStore';
+// import { useAppearanceStore } from '@/stores/AppearanceStore';
 import type { Theme } from '@/theme/theme';
 
 interface ICommunitiesProps {
@@ -40,17 +40,20 @@ interface ISectionListProps {
 }
 
 const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
+  const theme = useTheme<Theme>();
   const { data, refetch } = useSubcribedComunitesList();
   const [alphabeticallySorted, setAlphabeticallySorted] = useState<
     IAlphabeticlyOrderedCommunities[] | undefined
   >();
   const [isFetching, setIsFetching] = useState(false);
-  const { showIcons } = useAppearanceStore((state) => state.settings);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Communities',
       headerShadowVisible: true,
+      headerTitleStyle: {
+        color: theme.colors.text,
+      },
     });
   }, [navigation]);
 
@@ -116,20 +119,44 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
     });
   }, [refetch]);
 
-  const handleRenderItem = useCallback(
-    ({ item }: IRenderItemsProps) => {
+  interface IRenderHeaderItemsProps {
+    item: {
+      title: string;
+      subtitle: string;
+      icon: React.ReactNode;
+      iconBgColor: keyof Theme['colors'];
+    };
+    index: number;
+  }
+
+  const handleRenderHeaderItem = useCallback(
+    ({ item, index }: IRenderHeaderItemsProps) => {
       return (
         <CommunityCell
-          title={item.community.title}
-          subtitle={`${item.community.name} · ${
-            item.community.actor_id.split('//')[1]?.split('/')[0]
-          } `}
-          image={item.community.icon}
+          key={index}
+          index={index}
+          maxIndex={2}
+          icon={item.icon}
+          iconBgColor={item.iconBgColor}
+          title={item.title}
+          subtitle={item.subtitle}
         />
       );
     },
-    [showIcons]
+    []
   );
+
+  const handleRenderItem = useCallback(({ item }: IRenderItemsProps) => {
+    return (
+      <CommunityCell
+        title={item.community.title}
+        subtitle={`${item.community.name} · ${
+          item.community.actor_id.split('//')[1]?.split('/')[0]
+        } `}
+        image={item.community.icon}
+      />
+    );
+  }, []);
 
   const handleRenderSectionHeader = useCallback(
     ({ section: { letter } }: ISectionListProps) => {
@@ -140,7 +167,9 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
 
   return (
     <SectionList
-      style={style.container}
+      style={{
+        backgroundColor: theme.colors.secondaryBG,
+      }}
       refreshControl={
         <RefreshControl refreshing={isFetching} onRefresh={handleRefresh} />
       }
@@ -148,21 +177,9 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
         <FlatList
           data={CommunitiesFeed}
           keyExtractor={(item) => item.title}
-          // ItemSeparatorComponent={() => (
-          //   <Box height={1} backgroundColor="ligthGray" marginLeft="xxl" />
-          // )}
+          initialNumToRender={3}
           ListEmptyComponent={() => <ActivityIndicator />}
-          renderItem={({ item, index }) => (
-            <CommunityCell
-              key={index}
-              index={index}
-              maxIndex={2}
-              icon={item.icon}
-              iconBgColor={item.iconBgColor}
-              title={item.title}
-              subtitle={item.subtitle}
-            />
-          )}
+          renderItem={handleRenderHeaderItem}
         />
       )}
       sections={alphabeticallySorted ?? []}
@@ -178,12 +195,6 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
     />
   );
 };
-
-const style = StyleSheet.create({
-  container: {
-    backgroundColor: 'white',
-  },
-});
 
 export default CommunitiesList;
 

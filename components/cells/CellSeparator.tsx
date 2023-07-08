@@ -8,7 +8,7 @@ interface ICellSeparatorProps {
 const CellSeparator = ({ letter }: ICellSeparatorProps) => {
   return (
     <Box paddingVertical="xs" paddingHorizontal="l" backgroundColor="ligthGray">
-      <Text fontWeight="500" fontSize={15} color="gray">
+      <Text fontWeight="500" fontSize={15} color="subtitle">
         {letter}
       </Text>
     </Box>
