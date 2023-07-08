@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Pulse for Lemmy",
-    "slug": "PulseForLemmy",
+    "name": "Pulse",
+    "slug": "pulse",
     "scheme": "pulse",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -31,7 +31,16 @@
       "userInterfaceStyle": "light",
       "package": "com.pedromcdp.pulse"
     },
-    "plugins": [],
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "flipper": true
+          }
+        }
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "dff75167-02c8-43c5-ab19-45e85555834d"
