@@ -11,21 +11,26 @@ const theme = createTheme({
     text: palette.black,
     subtitle: palette.gray,
     cellColor: palette.white,
+    upvote: palette.orange,
     white: palette.white,
     black: palette.black,
     blue: palette.blue,
     red: palette.red,
     green: palette.green,
+    orange: palette.orange,
     ligthGray: palette.ligthGray,
     gray: palette.gray,
     divider: palette.border,
     sepratorGray: palette.darkGray,
+    linkDark: palette.linkDark,
+    linkLight: palette.linkLight,
   },
   spacing: {
     xxxxs: 0.5,
     xxxs: 1,
     xxs: 2,
     xs: 4,
+    ss: 6,
     s: 8,
     m: 12,
     l: 16,
@@ -38,6 +43,7 @@ const theme = createTheme({
   borderRadii: {
     0: 0,
     s: 4,
+    ss: 6,
     m: 10,
     l: 25,
     xl: 75,
@@ -49,7 +55,7 @@ const theme = createTheme({
   },
   textVariants: {
     default: {
-      fontSize: 17,
+      fontSize: 16,
       fontWeight: '400',
     },
     subtitle: {
@@ -60,6 +66,10 @@ const theme = createTheme({
       fontSize: 17,
       fontWeight: '600',
       marginBottom: 'xxxxs',
+    },
+    caption: {
+      fontSize: 13,
+      fontWeight: '400',
     },
   },
   buttonVariants: {

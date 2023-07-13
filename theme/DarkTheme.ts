@@ -10,7 +10,7 @@ const darkTheme: Theme = {
   colors: {
     ...theme.colors,
     primaryBG: palette.black,
-    secondaryBG: palette.black,
+    secondaryBG: palette.blackGray,
     accent: palette.blue,
     text: palette.white,
     subtitle: palette.gray,
