@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { CommunityView, ListingType, SortType } from 'lemmy-js-client';
 
-import { lemmyAuthToken, LemmyClient } from '@/services/LemmyService';
+import { LemmyClient } from '@/services/LemmyService';
 
 export interface IAlphabeticlyOrderedCommunities {
   letter: string;
@@ -38,19 +38,19 @@ export const useListComunites = ({
   );
 };
 
-export const useSubcribedComunitesList = () => {
+export const useSubcribedComunitesList = (jwt: string | undefined) => {
   return useQuery<CommunityView[], ErrorConstructor>(
-    ['listComunites', lemmyAuthToken, 'Subscribed', 50],
+    ['listComunites', jwt, 'Subscribed', 50],
     async () => {
       const response = await LemmyClient.listCommunities({
-        auth: lemmyAuthToken,
+        auth: jwt,
         type_: 'Subscribed',
         limit: 50,
       });
       return response.communities;
     },
     {
-      enabled: !!lemmyAuthToken,
+      enabled: !!jwt,
     }
   );
 };
