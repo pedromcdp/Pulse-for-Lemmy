@@ -2,9 +2,11 @@ import type { ParamListBase } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Image } from 'expo-image';
+import type { Community, ListingType } from 'lemmy-js-client';
 import { memo } from 'react';
 
 import { useAppearanceStore } from '@/stores/AppearanceStore';
+import { useFeedStore } from '@/stores/FeedStore';
 import type { Theme } from '@/theme/theme';
 import theme from '@/theme/theme';
 
@@ -20,6 +22,9 @@ interface ICommunityCellProps {
   image?: string;
   index?: number;
   maxIndex?: number;
+  isCommunity?: boolean;
+  community?: Community;
+  listType?: ListingType;
 }
 
 const CommunityCell = memo(
@@ -31,12 +36,16 @@ const CommunityCell = memo(
     image,
     index,
     maxIndex,
+    isCommunity = false,
+    community,
+    listType,
   }: ICommunityCellProps) => {
     const navigation =
       useNavigation<NativeStackNavigationProp<ParamListBase>>();
     const { showIcons, systemFont } = useAppearanceStore(
       (state) => state.settings
     );
+    const { setActiveType } = useFeedStore((state) => state);
 
     return (
       <Button
@@ -45,9 +54,13 @@ const CommunityCell = memo(
         width="100%"
         paddingLeft="l"
         alignItems="center"
-        onPress={() =>
-          navigation.navigate(icon ? 'Home' : 'Community', { title })
-        }
+        onPress={() => {
+          if (listType) setActiveType(listType);
+          navigation.navigate(icon ? 'Home' : 'Community', {
+            title: community?.name ?? title,
+            community,
+          });
+        }}
       >
         {icon && (
           <Box
@@ -74,6 +87,26 @@ const CommunityCell = memo(
             }}
           />
         )}
+        {showIcons && isCommunity && !image && (
+          <Box
+            backgroundColor="blue"
+            width={35}
+            height={35}
+            marginRight="l"
+            borderRadius="full"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text
+              fontSize={16}
+              allowFontScaling={systemFont}
+              fontWeight="600"
+              color="white"
+            >
+              {title[0]?.toUpperCase()}
+            </Text>
+          </Box>
+        )}
         <Box
           flexDirection="row"
           alignItems="center"
@@ -86,7 +119,7 @@ const CommunityCell = memo(
         >
           <Box>
             <Text
-              fontSize={16}
+              variant="default"
               paddingBottom="xxs"
               allowFontScaling={systemFont}
               color="text"
@@ -95,7 +128,7 @@ const CommunityCell = memo(
             </Text>
             {subtitle && (
               <Text
-                fontSize={15}
+                variant="subtitle"
                 color="subtitle"
                 allowFontScaling={systemFont}
               >

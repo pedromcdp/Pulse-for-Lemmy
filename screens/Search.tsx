@@ -7,6 +7,7 @@ import { Cell } from '@/components/cells';
 import { Box } from '@/components/core/Box';
 import { Text } from '@/components/core/Text';
 import { useListComunites } from '@/hooks/useGetComunites';
+import { useAppearanceStore } from '@/stores/AppearanceStore';
 import theme from '@/theme/theme';
 
 interface ISearchProps {
@@ -14,6 +15,7 @@ interface ISearchProps {
 }
 
 const SearchScreen = ({ navigation }: ISearchProps) => {
+  const { systemFont } = useAppearanceStore((state) => state.settings);
   const { data: trendingCommunities, isLoading } = useListComunites({
     type_: 'All',
     sort: 'TopDay',
@@ -76,7 +78,14 @@ const SearchScreen = ({ navigation }: ISearchProps) => {
       style={styles.container}
       data={trendingCommunities}
       ListHeaderComponent={() => (
-        <Text pb="s" textTransform="uppercase" color="gray" paddingLeft="l">
+        <Text
+          pb="s"
+          textTransform="uppercase"
+          color="gray"
+          paddingLeft="l"
+          variant="caption"
+          allowFontScaling={systemFont}
+        >
           Trending Communities
         </Text>
       )}
@@ -90,6 +99,7 @@ const SearchScreen = ({ navigation }: ISearchProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: theme.colors.secondaryBG,
     paddingHorizontal: theme.spacing.xl,
     paddingVertical: theme.spacing.xxl,
   },

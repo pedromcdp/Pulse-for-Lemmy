@@ -1,21 +1,29 @@
 /* eslint-disable no-restricted-syntax */
-import { Ionicons } from '@expo/vector-icons';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack/lib/typescript/src/types';
+import { FlashList } from '@shopify/flash-list';
 import { useTheme } from '@shopify/restyle';
-import React, { useLayoutEffect } from 'react';
+import * as Haptics from 'expo-haptics';
+import type { PostView } from 'lemmy-js-client';
+import React, { useCallback, useLayoutEffect, useState } from 'react';
 import {
   ActionSheetIOS,
   ActivityIndicator,
+  Dimensions,
+  RefreshControl,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SFSymbol } from 'react-native-sfsymbols';
 
+import PostCell from '@/components/cells/PostCell';
 import { Box } from '@/components/core/Box';
 import Button from '@/components/core/Button';
 import { Text } from '@/components/core/Text';
-import { palette } from '@/constants/colors';
+import { useGetAllPosts } from '@/hooks/useGetPosts';
+import { useAccountsStore } from '@/stores/AccountsStore';
+import { useFeedStore } from '@/stores/FeedStore';
 import type { Theme } from '@/theme/theme';
 
 interface IHomeProps {
@@ -25,11 +33,31 @@ interface IHomeProps {
 
 const Home = ({ navigation, route }: IHomeProps) => {
   const theme = useTheme<Theme>();
-  const [showSearchHeader, setShowSearchHeader] = React.useState(false);
+  const [showSearchHeader, setShowSearchHeader] = useState(false);
+  const handleShowSearchHeader = useCallback((value: boolean) => {
+    setShowSearchHeader(value);
+  }, []);
+  const activeAccount = useAccountsStore((state) => state.activeAccount);
+  const { activeType, activeSort } = useFeedStore((state) => state);
+  const flatListRef = React.useRef<FlashList<PostView>>(null);
+  const {
+    data: test,
+    hasNextPage,
+    fetchNextPage,
+    refetch,
+    isLoading,
+  } = useGetAllPosts(
+    activeAccount?.jwt,
+    undefined,
+    undefined,
+    activeSort,
+    activeType
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: route.params?.title ?? 'Home',
+      freezeOnBlur: true,
       headerTitle: ({ children }) =>
         showSearchHeader ? (
           <TextInput
@@ -47,19 +75,30 @@ const Home = ({ navigation, route }: IHomeProps) => {
           <Button
             flexDirection="row"
             ml="xs"
-            onPressIn={() => setShowSearchHeader(true)}
+            onPressIn={() => handleShowSearchHeader(true)}
             py="m"
             px="l"
+            alignItems="center"
           >
             <Text variant="title" allowFontScaling={false} color="text">
               {children}
             </Text>
-            <Ionicons
+            <SFSymbol
+              name="chevron.down"
+              weight="medium"
+              scale="small"
+              color={theme.colors.text}
+              size={16}
+              resizeMode="center"
+              multicolor={false}
+              style={{ width: 17, height: 17, marginTop: 2 }}
+            />
+            {/* <Ionicons
               name="ios-chevron-down-sharp"
               size={17}
               color={theme.colors.text}
               style={{ marginTop: 2 }}
-            />
+            /> */}
           </Button>
         ),
       headerShadowVisible: false,
@@ -71,16 +110,16 @@ const Home = ({ navigation, route }: IHomeProps) => {
           <Button
             flexDirection="row"
             ml="xs"
-            onPress={() => setShowSearchHeader(false)}
+            onPress={() => handleShowSearchHeader(false)}
           >
-            <Text fontSize={17} allowFontScaling={false} color="blue">
+            <Text fontSize={17} allowFontScaling={false} color="accent">
               Cancel
             </Text>
           </Button>
         ) : (
           <View style={{ flexDirection: 'row', gap: 10 }}>
             <TouchableOpacity
-              onPressIn={() =>
+              onPressIn={() => {
                 ActionSheetIOS.showActionSheetWithOptions(
                   {
                     options: [
@@ -101,54 +140,101 @@ const Home = ({ navigation, route }: IHomeProps) => {
                       //
                     }
                   }
-                )
-              }
+                );
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              }}
             >
-              <Ionicons
-                name="ios-flame-outline"
-                size={25}
-                color={palette.blue}
+              <SFSymbol
+                name="flame"
+                weight="light"
+                scale="small"
+                color={theme.colors.accent}
+                size={30}
+                resizeMode="center"
+                multicolor={false}
+                style={{ width: 30, height: 30 }}
               />
             </TouchableOpacity>
             <TouchableOpacity>
-              <Ionicons
-                name="ios-ellipsis-horizontal-outline"
-                size={25}
-                color={palette.blue}
+              <SFSymbol
+                name="ellipsis"
+                weight="light"
+                scale="small"
+                color={theme.colors.accent}
+                size={30}
+                resizeMode="center"
+                multicolor={false}
+                style={{ width: 30, height: 30 }}
               />
             </TouchableOpacity>
           </View>
         ),
       headerSearchBarOptions: {
         placeholder: 'Search',
+        hideWhenScrolling: true,
       },
     });
-  }, [navigation, showSearchHeader]);
+  }, [showSearchHeader, navigation]);
+
+  const handleRenderItem = useCallback(({ item }: { item: PostView }) => {
+    return <PostCell item={item} />;
+  }, []);
+
+  const renderEmpty = useCallback(() => {
+    return (
+      <Box
+        flexGrow={1}
+        flex={1}
+        justifyContent="center"
+        alignItems="center"
+        height={Dimensions.get('screen').height / 1.5}
+      >
+        <ActivityIndicator />
+      </Box>
+    );
+  }, []);
 
   return (
     <Box
       flex={1}
       backgroundColor="secondaryBG"
-      alignItems="center"
-      justifyContent="center"
       onStartShouldSetResponder={() => {
-        setShowSearchHeader(false);
+        handleShowSearchHeader(false);
         return false;
       }}
-      // onStartShouldSetResponder={() => {
-      //   setShowSearchHeader(false);
-      // }}
     >
-      <ActivityIndicator />
+      <FlashList
+        ref={flatListRef}
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+        }
+        data={test?.pages.map((page) => page.posts).flat(Infinity) as any}
+        renderItem={handleRenderItem}
+        ListEmptyComponent={renderEmpty}
+        estimatedItemSize={800}
+        keyExtractor={(_, index) => _.post.id.toString() + index.toString()}
+        onEndReached={() => {
+          if (hasNextPage) {
+            fetchNextPage();
+          }
+        }}
+        onEndReachedThreshold={0.5}
+      />
     </Box>
   );
 };
 
 export default Home;
 
-/* <Ionicons
-             name="ios-chevron-down-sharp"
-          size={17}
-             color="black"
-             style={{ marginTop: 2 }}
-           />  */
+// Search Results
+
+/* <Box
+position="absolute"
+left={0}
+right={0}
+bottom={0}
+top={0}
+bg="black"
+zIndex={1}
+opacity={showSearchHeader ? 0.5 : 0}
+/> */

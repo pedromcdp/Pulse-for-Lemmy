@@ -34,7 +34,14 @@ const Appearance = () => {
       paddingTop="xl"
       paddingHorizontal="l"
     >
-      <Text pb="xs" textTransform="uppercase" color="gray" paddingLeft="l">
+      <Text
+        pb="xs"
+        textTransform="uppercase"
+        color="gray"
+        paddingLeft="l"
+        variant="caption"
+        allowFontScaling={settings.systemFont}
+      >
         System
       </Text>
       <Cell
@@ -51,6 +58,8 @@ const Appearance = () => {
         textTransform="uppercase"
         color="gray"
         paddingLeft="l"
+        variant="caption"
+        allowFontScaling={settings.systemFont}
       >
         Text Size
       </Text>
@@ -75,6 +84,8 @@ const Appearance = () => {
         textTransform="uppercase"
         color="gray"
         paddingLeft="l"
+        variant="caption"
+        allowFontScaling={settings.systemFont}
       >
         Communities list
       </Text>

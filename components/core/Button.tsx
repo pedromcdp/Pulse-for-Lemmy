@@ -11,7 +11,7 @@ import {
   spacing,
   useRestyle,
 } from '@shopify/restyle';
-import { TouchableOpacity } from 'react-native';
+import { Pressable } from 'react-native';
 
 import type { Theme } from '@/theme/theme';
 
@@ -38,9 +38,9 @@ const Button = ({ onPress, onPressIn, children, ...rest }: Props) => {
   const props = useRestyle(restyleFunctions, rest);
 
   return (
-    <TouchableOpacity onPress={onPress} onPressIn={onPressIn}>
+    <Pressable onPress={onPress} onPressIn={onPressIn}>
       <Box {...props}>{children}</Box>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

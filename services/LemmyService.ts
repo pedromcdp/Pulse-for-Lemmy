@@ -5,12 +5,24 @@ import type { Login } from 'lemmy-js-client';
 import { LemmyHttp } from 'lemmy-js-client';
 import { Platform } from 'react-native';
 
+import Storage from './Storage';
+
 const baseUrl = 'https://lemmy.world';
 let LemmyClient: LemmyHttp;
 
 let lemmyAuthToken: string | undefined;
 
-const connect = async (): Promise<Boolean> => {
+interface Response {
+  instance: string;
+  username: string;
+  jwt: string;
+}
+
+interface Error {
+  error: string;
+}
+
+const connect = async (): Promise<Response | Error> => {
   LemmyClient = new LemmyHttp(baseUrl, {
     headers: {
       'User-Agent': `${Platform.OS.toUpperCase()}: com.pedromcdp.pulse v${nativeApplicationVersion}`,
@@ -20,15 +32,24 @@ const connect = async (): Promise<Boolean> => {
     username_or_email: USERNAME,
     password: PASSWORD,
   };
-
   try {
+    const activeAccount = await Storage.get('activeAccount');
+    if (activeAccount !== null) {
+      return activeAccount;
+    }
     const { jwt } = await LemmyClient.login(loginForm);
     lemmyAuthToken = jwt;
-    console.log('logged in');
-    return true;
+    if (!lemmyAuthToken) {
+      return { error: 'Error logging in' };
+    }
+    const account = {
+      instance: baseUrl,
+      username: USERNAME,
+      jwt: lemmyAuthToken,
+    };
+    return account;
   } catch (error) {
-    console.log('error', error);
-    return false;
+    return { error: 'Error logging in' };
   }
 };
 

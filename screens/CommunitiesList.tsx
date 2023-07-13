@@ -1,8 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '@shopify/restyle';
-import type { CommunityView } from 'lemmy-js-client';
+import type { CommunityView, ListingType } from 'lemmy-js-client';
 import React, {
   useCallback,
   useEffect,
@@ -22,8 +21,8 @@ import { palette } from '@/constants/colors';
 import { SortAndOrderAlphabetically } from '@/helpers/Sort&OrderAlphabetically';
 import type { IAlphabeticlyOrderedCommunities } from '@/hooks/useGetComunites';
 import { useSubcribedComunitesList } from '@/hooks/useGetComunites';
-import { lemmyAuthToken } from '@/services/LemmyService';
 import Storage from '@/services/Storage';
+import { useAccountsStore } from '@/stores/AccountsStore';
 // import { useAppearanceStore } from '@/stores/AppearanceStore';
 import type { Theme } from '@/theme/theme';
 
@@ -41,7 +40,8 @@ interface ISectionListProps {
 
 const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
   const theme = useTheme<Theme>();
-  const { data, refetch } = useSubcribedComunitesList();
+  const { activeAccount } = useAccountsStore();
+  const { data, refetch } = useSubcribedComunitesList(activeAccount?.jwt);
   const [alphabeticallySorted, setAlphabeticallySorted] = useState<
     IAlphabeticlyOrderedCommunities[] | undefined
   >();
@@ -62,10 +62,9 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
   }, []);
 
   useEffect(() => {
-    Storage.get('userCommunities').then((res) => {
+    Storage.get('newUserCommunities').then((res) => {
       if (res) {
-        const retrievedData = JSON.parse(res);
-        setAlphabeticallySorted(retrievedData);
+        setAlphabeticallySorted(res);
       }
     });
   }, []);
@@ -75,38 +74,36 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
     subtitle: string;
     icon: React.ReactNode;
     iconBgColor: keyof Theme['colors'];
+    listType: ListingType;
   }[] = [
     {
       title: 'Home',
       subtitle: 'Posts from subscriptions',
       icon: <Ionicons name="ios-home" size={22} color={palette.white} />,
       iconBgColor: 'red',
+      listType: 'Subscribed',
     },
     {
       title: 'All',
       subtitle: 'Posts from all federated communities',
       icon: <Ionicons name="ios-library" size={22} color={palette.white} />,
       iconBgColor: 'blue',
+      listType: 'All',
     },
     {
       title: 'Local',
       subtitle: 'Posts from communities in your instance',
       icon: <Ionicons name="ios-people" size={22} color={palette.white} />,
       iconBgColor: 'green',
+      listType: 'Local',
     },
   ];
-
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [lemmyAuthToken])
-  );
 
   useEffect(() => {
     if (data) {
       if (data.length > 0) {
         const sorted = SortAndOrderAlphabetically(data);
-        Storage.set('userCommunities', JSON.stringify(sorted));
+        Storage.set('newUserCommunities', sorted);
         setAlphabeticallySorted(sorted);
       }
     }
@@ -125,6 +122,7 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
       subtitle: string;
       icon: React.ReactNode;
       iconBgColor: keyof Theme['colors'];
+      listType: ListingType;
     };
     index: number;
   }
@@ -140,6 +138,7 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
           iconBgColor={item.iconBgColor}
           title={item.title}
           subtitle={item.subtitle}
+          listType={item.listType}
         />
       );
     },
@@ -154,6 +153,8 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
           item.community.actor_id.split('//')[1]?.split('/')[0]
         } `}
         image={item.community.icon}
+        community={item.community}
+        isCommunity
       />
     );
   }, []);

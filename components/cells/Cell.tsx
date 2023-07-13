@@ -75,6 +75,12 @@ const Cell = memo(
         padding="xxs"
       > */}
         {icon && <Ionicons name={icon} size={24} color={theme.colors.blue} />}
+        {/* <SFSymbol
+          name="faceid"
+          size={17}
+          scale="large"
+          color={theme.colors.blue}
+        /> */}
         {/* </Box> */}
 
         <Box
@@ -90,14 +96,18 @@ const Cell = memo(
         >
           <Box>
             <Text
-              fontSize={17}
+              variant="default"
               paddingBottom="xxs"
               allowFontScaling={systemFont}
             >
               {title}
             </Text>
             {subtitle && (
-              <Text fontSize={15} color="gray" allowFontScaling={systemFont}>
+              <Text
+                variant="subtitle"
+                color="gray"
+                allowFontScaling={systemFont}
+              >
                 {subtitle}
               </Text>
             )}

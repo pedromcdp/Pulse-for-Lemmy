@@ -1,22 +1,30 @@
-import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from '@shopify/restyle';
 import { StatusBar } from 'expo-status-bar';
-import type { GetPersonDetailsResponse } from 'lemmy-js-client';
 import { Fragment, useEffect, useState } from 'react';
+import { Text } from 'react-native';
+import { SFSymbol } from 'react-native-sfsymbols';
 
 import { Box } from '@/components/core/Box';
-import { useGetUserDetails } from '@/hooks/useGetUser';
+import { useListComunites } from '@/hooks/useGetComunites';
+import { useGetUserDetails, useGetUserUnreadCount } from '@/hooks/useGetUser';
+import About from '@/screens/About';
 import Account from '@/screens/Account';
+import AccountTemp from '@/screens/AccountTemp';
 import Appearance from '@/screens/Appearance';
+import Comments from '@/screens/Comments';
 import CommunitiesList from '@/screens/CommunitiesList';
-import Community from '@/screens/Community';
+import CommunityScreen from '@/screens/Community';
 import Home from '@/screens/Home';
 import Inbox from '@/screens/Inbox';
+import Post from '@/screens/Post';
+import Posts from '@/screens/Posts';
+import SavedPosts from '@/screens/SavedPosts';
 import Search from '@/screens/Search';
 import Settings from '@/screens/Settings';
 import Storage from '@/services/Storage';
+import { useAccountsStore } from '@/stores/AccountsStore';
 import { useAppearanceStore } from '@/stores/AppearanceStore';
 import type { Theme } from '@/theme/theme';
 
@@ -28,29 +36,23 @@ const SearchStack = createNativeStackNavigator();
 const SettingsStack = createNativeStackNavigator();
 
 const TabRoutes = () => {
-  const { data: userData } = useGetUserDetails('pmcdp');
-  const [user, setUser] = useState<GetPersonDetailsResponse | null>(null);
+  const currentAccount = useAccountsStore((state) => state.activeAccount);
+  const { data } = useGetUserUnreadCount(currentAccount?.jwt);
+  useGetUserDetails(currentAccount?.jwt, currentAccount?.username);
+  useListComunites({
+    type_: 'All',
+    sort: 'TopDay',
+    limit: 5,
+  });
   const { setSettings } = useAppearanceStore((state) => state);
   const theme = useTheme<Theme>();
+  const [unreadCount, setUnreadCount] = useState<number | undefined>(undefined);
 
   useEffect(() => {
-    if (userData) {
-      Storage.set('user', JSON.stringify(userData));
-      setUser(userData);
+    if (data) {
+      setUnreadCount(data.mentions + data.replies + data.private_messages);
     }
-  }, [userData]);
-
-  useEffect(() => {
-    const getUser = async () => {
-      const storedUser = await Storage.get('user').then((res) =>
-        JSON.parse(res)
-      );
-      if (storedUser) {
-        setUser(storedUser);
-      }
-    };
-    getUser();
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     Storage.get('appearance').then((res) => {
@@ -73,15 +75,20 @@ const TabRoutes = () => {
           options={{
             headerShown: false,
             title: 'Posts',
+            tabBarLabel: ({ children, color }) => (
+              <Text style={{ color, fontSize: 11 }} allowFontScaling={false}>
+                {children}
+              </Text>
+            ),
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="ios-home" size={size} color={color} />
+              <SFSymbol name="doc.text.image" size={size - 2} color={color} />
             ),
           }}
         >
           {() => (
             <Box
               flex={1}
-              backgroundColor="primaryBG"
+              backgroundColor="secondaryBG"
               position="absolute"
               width={'100%'}
               height={'100%'}
@@ -100,7 +107,12 @@ const TabRoutes = () => {
                     component={CommunitiesList}
                   />
                   <FeedStack.Screen name="Home" component={Home} />
-                  <FeedStack.Screen name="Community" component={Community} />
+                  <FeedStack.Screen
+                    name="Community"
+                    component={CommunityScreen}
+                  />
+                  <FeedStack.Screen name="Account" component={AccountTemp} />
+                  <FeedStack.Screen name="Post" component={Post} />
                 </FeedStack.Group>
               </FeedStack.Navigator>
             </Box>
@@ -111,10 +123,15 @@ const TabRoutes = () => {
           options={{
             headerShown: false,
             title: 'Inbox',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="ios-mail" size={size} color={color} />
+            tabBarLabel: ({ children, color }) => (
+              <Text style={{ color, fontSize: 11 }} allowFontScaling={false}>
+                {children}
+              </Text>
             ),
-            // tabBarBadge: 18,
+            tabBarIcon: ({ color, size }) => (
+              <SFSymbol name="envelope.fill" size={size - 2} color={color} />
+            ),
+            tabBarBadge: unreadCount === 0 ? undefined : unreadCount,
             // freezeOnBlur: true,
           }}
         >
@@ -128,11 +145,17 @@ const TabRoutes = () => {
           name="AccountTab"
           options={{
             headerShown: false,
-            tabBarLabel: user ? user.person_view.person.name : 'Account',
+            title: currentAccount?.username ?? 'Account',
+            tabBarLabel: ({ children, color }) => (
+              <Text style={{ color, fontSize: 11 }} allowFontScaling={false}>
+                {children}
+              </Text>
+            ),
             tabBarIcon: ({ color, size }) => (
-              <Ionicons
-                name="ios-person-circle-outline"
-                size={size}
+              <SFSymbol
+                name="person.crop.circle"
+                size={size - 2}
+                weight="light"
                 color={color}
               />
             ),
@@ -143,14 +166,14 @@ const TabRoutes = () => {
               <AccountStack.Screen
                 name="Account"
                 component={Account}
-                initialParams={userData}
                 options={{
-                  title: user ? user.person_view.person.name : 'Account',
+                  title: currentAccount ? currentAccount.username : 'Account',
                 }}
               />
               {/* Change for correct Screens */}
-              <AccountStack.Screen name="Comments" component={Home} />
-              <AccountStack.Screen name="Posts" component={Home} />
+              <AccountStack.Screen name="Comments" component={Comments} />
+              <AccountStack.Screen name="Posts" component={Posts} />
+              <AccountStack.Screen name="SavedPosts" component={SavedPosts} />
             </AccountStack.Navigator>
           )}
         </TabCobtroller.Screen>
@@ -158,9 +181,14 @@ const TabRoutes = () => {
           name="SearchTab"
           options={{
             headerShown: false,
-            tabBarLabel: 'Search',
+            title: 'Search',
+            tabBarLabel: ({ children, color }) => (
+              <Text style={{ color, fontSize: 11 }} allowFontScaling={false}>
+                {children}
+              </Text>
+            ),
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="ios-search" size={size} color={color} />
+              <SFSymbol name="magnifyingglass" size={size - 2} color={color} />
             ),
           }}
         >
@@ -168,7 +196,10 @@ const TabRoutes = () => {
             <SearchStack.Navigator initialRouteName="Search">
               <SearchStack.Group>
                 <SearchStack.Screen name="Search" component={Search} />
-                <SearchStack.Screen name="Community" component={Community} />
+                <SearchStack.Screen
+                  name="Community"
+                  component={CommunityScreen}
+                />
               </SearchStack.Group>
             </SearchStack.Navigator>
           )}
@@ -177,9 +208,14 @@ const TabRoutes = () => {
           name="SettingsTab"
           options={{
             headerShown: false,
-            tabBarLabel: 'Settings',
+            title: 'Settings',
+            tabBarLabel: ({ children, color }) => (
+              <Text style={{ color, fontSize: 11 }} allowFontScaling={false}>
+                {children}
+              </Text>
+            ),
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="ios-cog" size={size} color={color} />
+              <SFSymbol name="gear" size={size - 2} color={color} />
             ),
           }}
         >
@@ -187,6 +223,7 @@ const TabRoutes = () => {
             <SettingsStack.Navigator>
               <SettingsStack.Screen name="Settings" component={Settings} />
               <SettingsStack.Screen name="Appearance" component={Appearance} />
+              <SettingsStack.Screen name="About" component={About} />
             </SettingsStack.Navigator>
           )}
         </TabCobtroller.Screen>

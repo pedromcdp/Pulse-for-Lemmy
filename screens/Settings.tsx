@@ -1,4 +1,5 @@
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useLayoutEffect } from 'react';
 
 import { Cell } from '@/components/cells';
 import { ScrollView } from '@/components/core/ScrollView';
@@ -8,6 +9,12 @@ interface ISettingsProps {
 }
 
 const Settings = ({ navigation }: ISettingsProps) => {
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: 'Settings',
+    });
+  }, [navigation]);
+
   return (
     <ScrollView
       flex={1}
@@ -29,7 +36,13 @@ const Settings = ({ navigation }: ISettingsProps) => {
         index={3}
         maxIndex={4}
       />
-      <Cell title="About" icon="ios-at-sharp" index={4} maxIndex={4} />
+      <Cell
+        title="About"
+        icon="ios-at-sharp"
+        index={4}
+        maxIndex={4}
+        onPress={() => navigation.navigate('About')}
+      />
     </ScrollView>
   );
 };
