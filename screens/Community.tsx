@@ -6,6 +6,7 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -34,6 +35,7 @@ interface ICommunityProps {
 }
 
 const CommunityScreen = ({ navigation, route }: ICommunityProps) => {
+  const recycled = useRef({});
   const [showSearchHeader, setShowSearchHeader] = useState<boolean>(false);
   const activeAccount = useAccountsStore((state) => state.activeAccount);
   const flatListRef = React.useRef<FlashList<PostView>>(null);
@@ -179,7 +181,14 @@ const CommunityScreen = ({ navigation, route }: ICommunityProps) => {
   }, []);
 
   const handleRenderItem = useCallback(({ item }: { item: PostView }) => {
-    return <PostCell item={item} isCommunityItem />;
+    return (
+      <PostCell
+        item={item}
+        isCommunityItem
+        recycled={recycled}
+        postId={item.post.id}
+      />
+    );
   }, []);
 
   const { data, hasNextPage, fetchNextPage, refetch, isLoading } =

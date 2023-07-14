@@ -5,12 +5,13 @@ import { FlashList } from '@shopify/flash-list';
 import { useTheme } from '@shopify/restyle';
 import * as Haptics from 'expo-haptics';
 import type { PostView } from 'lemmy-js-client';
-import React, { useCallback, useLayoutEffect, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import {
   ActionSheetIOS,
   ActivityIndicator,
   Dimensions,
   RefreshControl,
+  ScrollView,
   TextInput,
   TouchableOpacity,
   View,
@@ -32,6 +33,7 @@ interface IHomeProps {
 }
 
 const Home = ({ navigation, route }: IHomeProps) => {
+  const recycled = useRef({});
   const theme = useTheme<Theme>();
   const [showSearchHeader, setShowSearchHeader] = useState(false);
   const handleShowSearchHeader = useCallback((value: boolean) => {
@@ -40,13 +42,8 @@ const Home = ({ navigation, route }: IHomeProps) => {
   const activeAccount = useAccountsStore((state) => state.activeAccount);
   const { activeType, activeSort } = useFeedStore((state) => state);
   const flatListRef = React.useRef<FlashList<PostView>>(null);
-  const {
-    data: test,
-    hasNextPage,
-    fetchNextPage,
-    refetch,
-    isLoading,
-  } = useGetAllPosts(
+
+  const { data, fetchNextPage, refetch, isLoading } = useGetAllPosts(
     activeAccount?.jwt,
     undefined,
     undefined,
@@ -93,12 +90,6 @@ const Home = ({ navigation, route }: IHomeProps) => {
               multicolor={false}
               style={{ width: 17, height: 17, marginTop: 2 }}
             />
-            {/* <Ionicons
-              name="ios-chevron-down-sharp"
-              size={17}
-              color={theme.colors.text}
-              style={{ marginTop: 2 }}
-            /> */}
           </Button>
         ),
       headerShadowVisible: false,
@@ -177,46 +168,56 @@ const Home = ({ navigation, route }: IHomeProps) => {
   }, [showSearchHeader, navigation]);
 
   const handleRenderItem = useCallback(({ item }: { item: PostView }) => {
-    return <PostCell item={item} />;
+    return <PostCell item={item} recycled={recycled} postId={item.post.id} />;
   }, []);
 
   const renderEmpty = useCallback(() => {
     return (
-      <Box
-        flexGrow={1}
-        flex={1}
-        justifyContent="center"
-        alignItems="center"
-        height={Dimensions.get('screen').height / 1.5}
+      <ScrollView
+        style={{
+          height: Dimensions.get('screen').height / 1.5,
+        }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          height: Dimensions.get('screen').height / 1.5,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        contentInsetAdjustmentBehavior="automatic"
       >
         <ActivityIndicator />
-      </Box>
+      </ScrollView>
     );
   }, []);
 
   return (
-    <Box
-      flex={1}
-      backgroundColor="secondaryBG"
-      onStartShouldSetResponder={() => {
-        handleShowSearchHeader(false);
-        return false;
-      }}
-    >
+    <Box flex={1} bg="secondaryBG" position="relative">
+      {showSearchHeader ? (
+        <Box
+          position="absolute"
+          left={0}
+          right={0}
+          bottom={0}
+          top={0}
+          bg="black"
+          zIndex={1}
+          opacity={0.5}
+        />
+      ) : null}
       <FlashList
         ref={flatListRef}
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={refetch} />
         }
-        data={test?.pages.map((page) => page.posts).flat(Infinity) as any}
+        data={data?.pages.map((page) => page.posts).flat(Infinity) as any}
         renderItem={handleRenderItem}
         ListEmptyComponent={renderEmpty}
         estimatedItemSize={800}
         keyExtractor={(_, index) => _.post.id.toString() + index.toString()}
         onEndReached={() => {
-          if (hasNextPage) {
-            fetchNextPage();
-          }
+          // if (hasNextPage) {
+          fetchNextPage();
+          // }
         }}
         onEndReachedThreshold={0.5}
       />
@@ -228,13 +229,4 @@ export default Home;
 
 // Search Results
 
-/* <Box
-position="absolute"
-left={0}
-right={0}
-bottom={0}
-top={0}
-bg="black"
-zIndex={1}
-opacity={showSearchHeader ? 0.5 : 0}
-/> */
+/*  */
