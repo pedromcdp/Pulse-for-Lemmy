@@ -1,9 +1,9 @@
 import type { ParamListBase } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Image } from 'expo-image';
 import type { Community, ListingType } from 'lemmy-js-client';
 import { memo } from 'react';
+import FastImage from 'react-native-fast-image';
 
 import { useAppearanceStore } from '@/stores/AppearanceStore';
 import { useFeedStore } from '@/stores/FeedStore';
@@ -76,9 +76,9 @@ const CommunityCell = memo(
           </Box>
         )}
         {showIcons && image && (
-          <Image
+          <FastImage
             source={{ uri: image }}
-            contentFit="contain"
+            resizeMode={FastImage.resizeMode.contain}
             style={{
               width: 35,
               height: 35,

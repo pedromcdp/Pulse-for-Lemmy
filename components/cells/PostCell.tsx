@@ -4,11 +4,11 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '@shopify/restyle';
 import dayjs from 'dayjs';
 import UpdateLocate from 'dayjs/plugin/updateLocale';
-import type { ImageLoadEventData } from 'expo-image';
-import { Image } from 'expo-image';
 import type { PostView } from 'lemmy-js-client';
 import React, { memo, useMemo, useState } from 'react';
 import { Dimensions } from 'react-native';
+import type { OnLoadEvent } from 'react-native-fast-image';
+import FastImage from 'react-native-fast-image';
 import { SFSymbol } from 'react-native-sfsymbols';
 
 import { ExtensionType, getLinkInfo } from '@/helpers/LinkHelper';
@@ -74,9 +74,10 @@ const PostCell = memo(({ item, isCommunityItem = false }: IPostCellProps) => {
   // }, [isImage, item.post.url]);
 
   // set the correct ratio of the image on load
-  const onLoad = (e: ImageLoadEventData) => {
-    const { width, height } = e.source;
+  const onLoad = (e: OnLoadEvent) => {
+    const { width, height } = e.nativeEvent;
     setRatio(width / height);
+    FastImage.clearMemoryCache();
   };
 
   const Footer = () => {
@@ -286,12 +287,9 @@ const PostCell = memo(({ item, isCommunityItem = false }: IPostCellProps) => {
   const image = useMemo(() => {
     if (isImage && thumbnailUrl) {
       return (
-        <Image
+        <FastImage
           source={{ uri: thumbnailUrl }}
-          contentFit="contain"
-          enableLiveTextInteraction
-          recyclingKey={item.post.id.toString()}
-          cachePolicy="disk"
+          resizeMode="contain"
           onLoad={onLoad}
           style={{
             width: Dimensions.get('window').width,

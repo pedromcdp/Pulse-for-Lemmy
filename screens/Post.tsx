@@ -4,10 +4,16 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FlashList } from '@shopify/flash-list';
 import { useTheme } from '@shopify/restyle';
 import dayjs from 'dayjs';
-import { Image } from 'expo-image';
+import * as Haptics from 'expo-haptics';
 import type { CommentView, PostView } from 'lemmy-js-client';
 import React, { useLayoutEffect, useMemo } from 'react';
-import { Dimensions, Pressable, RefreshControl } from 'react-native';
+import {
+  Dimensions,
+  Pressable,
+  RefreshControl,
+  TouchableOpacity,
+} from 'react-native';
+import FastImage from 'react-native-fast-image';
 import Markdown from 'react-native-markdown-display';
 import { SFSymbol } from 'react-native-sfsymbols';
 
@@ -69,12 +75,9 @@ const Post = ({ navigation, route }: IPostProps) => {
     if (isImage && thumbnailUrl) {
       return (
         <Box position="relative">
-          <Image
+          <FastImage
             source={{ uri: thumbnailUrl }}
-            contentFit="contain"
-            enableLiveTextInteraction
-            recyclingKey={item.post.id.toString()}
-            cachePolicy="disk"
+            resizeMode="contain"
             style={{
               width: '100%',
               justifyContent: 'center',
@@ -535,18 +538,24 @@ const Post = ({ navigation, route }: IPostProps) => {
                 </Text>
               </Box>
               <Box flexDirection="row" alignItems="center">
-                <SFSymbol
-                  name="ellipsis"
-                  size={15}
-                  scale="large"
-                  weight="bold"
-                  color={theme.colors.subtitle}
-                  style={{
-                    width: 15,
-                    height: 15,
-                    marginRight: theme.spacing.m,
-                  }}
-                />
+                <TouchableOpacity
+                  onPressIn={() =>
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+                  }
+                >
+                  <SFSymbol
+                    name="ellipsis"
+                    size={15}
+                    scale="large"
+                    weight="bold"
+                    color={theme.colors.subtitle}
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginRight: theme.spacing.s,
+                    }}
+                  />
+                </TouchableOpacity>
                 <Text variant="default" color="subtitle">
                   {dayjs(comment.comment.published).fromNow(true)}
                 </Text>

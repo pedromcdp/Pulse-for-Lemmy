@@ -1,7 +1,6 @@
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FlashList } from '@shopify/flash-list';
-import { Image } from 'expo-image';
 import type { PostView } from 'lemmy-js-client';
 import React, {
   useCallback,
@@ -18,6 +17,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { SFSymbol } from 'react-native-sfsymbols';
 
 import PostCell from '@/components/cells/PostCell';
@@ -45,7 +45,7 @@ const CommunityScreen = ({ navigation, route }: ICommunityProps) => {
     navigation.setOptions({
       title: route.params!.title,
       // headerBackTitle: 'Back',
-      headerBackTitleVisible: !(route.params!.title.length > 15),
+      headerBackTitleVisible: !(route.params!.title.length > 14),
       headerTitle: ({ children }) =>
         showSearchHeader ? (
           <TextInput
@@ -161,7 +161,7 @@ const CommunityScreen = ({ navigation, route }: ICommunityProps) => {
   }, [navigation, showSearchHeader]);
 
   useEffect(() => {
-    Image.clearMemoryCache();
+    FastImage.clearMemoryCache();
   }, []);
 
   const renderEmpty = useCallback(() => {
