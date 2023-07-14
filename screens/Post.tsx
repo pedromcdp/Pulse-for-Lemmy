@@ -518,7 +518,13 @@ const Post = ({ navigation, route }: IPostProps) => {
               alignItems="center"
             >
               <Box flexDirection="row" alignItems="center" id="name&upvote">
-                <Text variant="default" fontWeight="500">
+                <Text
+                  variant="default"
+                  fontWeight="500"
+                  color={
+                    item.creator.id === comment.creator.id ? 'accent' : 'black'
+                  }
+                >
                   {comment.creator.name}
                 </Text>
                 <SFSymbol
@@ -695,10 +701,6 @@ const Post = ({ navigation, route }: IPostProps) => {
             >
               {comment.comment.content}
             </Markdown>
-
-            {/* <Text pt="s" variant="default">
-              {comment.comment.content}
-            </Text> */}
           </Box>
         );
       },
