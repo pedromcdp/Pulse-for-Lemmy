@@ -4121,11 +4121,6 @@ expo-haptics@~12.2.1:
   resolved "https://registry.yarnpkg.com/expo-haptics/-/expo-haptics-12.2.1.tgz#9705c245663fcf317ca19adc2e8bbcb5270562e7"
   integrity sha512-XRZtmIQi901Q4+/cZnVrULRFOqShsgCuSP0SCbVEhnq8sK0OA4jgun12O93Pu5aGvTyoqsAcIArE8tX+8AEqRA==
 
-expo-image@~1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/expo-image/-/expo-image-1.0.1.tgz#0cc04fac8e5204fc0d4d86f30f26273c0b1dce08"
-  integrity sha512-h3xDHaw3ZWzOKar1eFXY4CsFgDstw6fo5Tzv6BXXs+Zte5betPMb567f8zCNnhpkr7UCo5CN7Cg92o+lqzdvRA==
-
 expo-json-utils@~0.5.0:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/expo-json-utils/-/expo-json-utils-0.5.1.tgz#fcb01050b8aa66592eea2024a48979f2d090c6f9"
@@ -7204,6 +7199,11 @@ react-native-dotenv@^3.4.9:
   integrity sha512-dbyd+mcy7SUzxEgmt33TRf1FGcNe6swJhXmB0unKkI49F7+pidog9kPtjxMLTAfmKA8gcN2XHQSKltGfGbGCLQ==
   dependencies:
     dotenv "^16.3.1"
+
+react-native-fast-image@^8.6.3:
+  version "8.6.3"
+  resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.6.3.tgz#6edc3f9190092a909d636d93eecbcc54a8822255"
+  integrity sha512-Sdw4ESidXCXOmQ9EcYguNY2swyoWmx53kym2zRsvi+VeFCHEdkO+WG1DK+6W81juot40bbfLNhkc63QnWtesNg==
 
 react-native-fit-image@^1.5.5:
   version "1.5.5"

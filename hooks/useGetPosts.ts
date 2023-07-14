@@ -4,13 +4,13 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { Image } from 'expo-image';
 import type {
   GetPostsResponse,
   ListingType,
   PostView,
   SortType,
 } from 'lemmy-js-client';
+import FastImage from 'react-native-fast-image';
 
 import { prefetchImages } from '@/helpers/ImageHelper';
 import { LemmyClient } from '@/services/LemmyService';
@@ -90,8 +90,10 @@ export const useGetAllPosts = (
         sort,
         type_,
       });
+      FastImage.clearMemoryCache();
       prefetchImages(response.posts);
-      Image.clearMemoryCache();
+      FastImage.clearMemoryCache();
+      // Image.clearMemoryCache();
       const removedDuplicatePosts = response.posts.filter((post) => {
         const posts = queryClient.getQueryData<LemmyInifiniteGetQueryData>([
           'Posts',

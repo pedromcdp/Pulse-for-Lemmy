@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax */
-import { Image } from 'expo-image';
 import type { PostView } from 'lemmy-js-client';
+import FastImage from 'react-native-fast-image';
 
 import { ExtensionType, getLinkInfo } from './LinkHelper';
 
@@ -21,5 +21,7 @@ export const prefetchImages = async (posts: PostView[]): Promise<void> => {
     }
   }
 
-  Image.prefetch(images as string[]);
+  FastImage.preload(images.map((image) => ({ uri: image })));
+
+  // Image.prefetch(images as string[]);
 };

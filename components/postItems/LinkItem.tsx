@@ -1,8 +1,8 @@
 import { useTheme } from '@shopify/restyle';
-import { Image } from 'expo-image';
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import {} from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { SFSymbol } from 'react-native-sfsymbols';
 
 import type { Theme } from '@/theme/theme';
@@ -51,7 +51,7 @@ function LinkItem({ link, thumbnail, isPostPage }: ILinkItemProps) {
       onPress={handlePressButtonAsync}
     >
       {!isPostPage && thumbnail && (
-        <Image
+        <FastImage
           style={{
             width: '100%',
             height: 190,
@@ -72,7 +72,7 @@ function LinkItem({ link, thumbnail, isPostPage }: ILinkItemProps) {
       >
         <Box flexDirection="row" alignItems="center">
           {isPostPage && thumbnail ? (
-            <Image
+            <FastImage
               style={{
                 width: 32,
                 height: 32,
