@@ -81,56 +81,56 @@ export const useGetAllPosts = (
   return useInfiniteQuery<LemmyInifiniteQuery, ErrorConstructor>(
     ['Posts', activeAccount, community_id, community_name, sort, type_],
     async ({ pageParam = 1 }) => {
-      const response = await LemmyClient.getPosts({
-        auth: activeAccount,
-        community_id,
-        community_name,
-        limit: 12,
-        page: pageParam,
-        sort,
-        type_,
-      });
-      FastImage.clearMemoryCache();
-      prefetchImages(response.posts);
-      FastImage.clearMemoryCache();
-      // Image.clearMemoryCache();
-      const removedDuplicatePosts = response.posts.filter((post) => {
-        const posts = queryClient.getQueryData<LemmyInifiniteGetQueryData>([
-          'Posts',
-          activeAccount,
+      try {
+        const response = await LemmyClient.getPosts({
+          auth: activeAccount,
           community_id,
           community_name,
+          limit: 16,
+          page: pageParam,
           sort,
           type_,
-        ]);
-        if (!posts) {
-          return true;
-        }
-        if (pageParam === 1) {
-          return true;
-        }
-        const currentPosts = posts.pages
-          .map((p) => p.posts.map((p2) => p2.post.id))
-          .flat(Infinity);
+        });
+        FastImage.clearMemoryCache();
+        prefetchImages(response.posts);
+        FastImage.clearMemoryCache();
+        const removedDuplicatePosts = response.posts.filter((post) => {
+          const posts = queryClient.getQueryData<LemmyInifiniteGetQueryData>([
+            'Posts',
+            activeAccount,
+            community_id,
+            community_name,
+            sort,
+            type_,
+          ]);
+          if (!posts) {
+            return true;
+          }
+          if (pageParam === 1) {
+            return true;
+          }
+          const currentPosts = posts.pages
+            .map((p) => p.posts.map((p2) => p2.post.id))
+            .flat(Infinity);
 
-        return !currentPosts.includes(post.post.id);
-      });
-      response.posts = removedDuplicatePosts;
-      const data = {
-        posts: response.posts,
-        page: pageParam,
-      };
-      removedDuplicatePosts.forEach((post) => {
-        queryClient.setQueryData<PostView>(['post', post.post.id], post);
-      });
-      return data;
+          return !currentPosts.includes(post.post.id);
+        });
+        response.posts = removedDuplicatePosts;
+        const data = {
+          posts: response.posts,
+          page: pageParam,
+        };
+        removedDuplicatePosts.forEach((post) => {
+          queryClient.setQueryData<PostView>(['post', post.post.id], post);
+        });
+        return data;
+      } catch (error) {
+        throw new Error(error as string);
+      }
     },
     {
       keepPreviousData: true,
       getNextPageParam: (lastPage) => {
-        if (lastPage.posts.length < 1) {
-          return undefined;
-        }
         return lastPage.page + 1;
       },
     }
