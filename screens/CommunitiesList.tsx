@@ -51,14 +51,11 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
     navigation.setOptions({
       title: 'Communities',
       headerShadowVisible: true,
-      headerTitleStyle: {
-        color: theme.colors.text,
-      },
     });
   }, [navigation]);
 
   useEffect(() => {
-    navigation.navigate('Home');
+    navigation.push('Home');
   }, []);
 
   useEffect(() => {
@@ -79,21 +76,21 @@ const CommunitiesList = ({ navigation }: ICommunitiesProps) => {
     {
       title: 'Home',
       subtitle: 'Posts from subscriptions',
-      icon: <Ionicons name="ios-home" size={22} color={palette.white} />,
+      icon: <Ionicons name="home" size={22} color={palette.white} />,
       iconBgColor: 'red',
       listType: 'Subscribed',
     },
     {
       title: 'All',
       subtitle: 'Posts from all federated communities',
-      icon: <Ionicons name="ios-library" size={22} color={palette.white} />,
+      icon: <Ionicons name="library" size={22} color={palette.white} />,
       iconBgColor: 'blue',
       listType: 'All',
     },
     {
       title: 'Local',
       subtitle: 'Posts from communities in your instance',
-      icon: <Ionicons name="ios-people" size={22} color={palette.white} />,
+      icon: <Ionicons name="people" size={22} color={palette.white} />,
       iconBgColor: 'green',
       listType: 'Local',
     },

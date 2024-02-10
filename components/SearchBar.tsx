@@ -18,7 +18,7 @@ const SearchBar = () => {
       >
         {/* search Icon */}
         <Ionicons
-          name="ios-search"
+          name="search"
           size={20}
           color="gray"
           style={{ marginLeft: 1 }}
@@ -37,7 +37,7 @@ const SearchBar = () => {
         {/* cross Icon, depending on whether the search bar is clicked or not */}
         {clicked && (
           <Ionicons
-            name="ios-close-circle"
+            name="close-circle"
             size={20}
             color="black"
             style={{ padding: 1 }}

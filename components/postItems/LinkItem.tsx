@@ -1,7 +1,6 @@
 import { useTheme } from '@shopify/restyle';
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
-import {} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { SFSymbol } from 'react-native-sfsymbols';
 
@@ -88,7 +87,7 @@ function LinkItem({ link, thumbnail, isPostPage }: ILinkItemProps) {
               name="safari.fill"
               weight="thin"
               scale="large"
-              color={theme.colors.gray}
+              color={theme.colors.linkLight}
               size={25}
               resizeMode="center"
               style={{
@@ -127,7 +126,7 @@ function LinkItem({ link, thumbnail, isPostPage }: ILinkItemProps) {
             name="chevron.right"
             weight="medium"
             scale="medium"
-            color={theme.colors.gray}
+            color={theme.colors.linkLight}
             size={16}
             resizeMode="center"
             style={{

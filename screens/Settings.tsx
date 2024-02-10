@@ -22,26 +22,26 @@ const Settings = ({ navigation }: ISettingsProps) => {
       paddingHorizontal="l"
       paddingTop="xl"
     >
-      <Cell title="General" icon="ios-cog" index={0} maxIndex={4} />
+      <Cell title="General" icon="cog" index={0} maxIndex={4} />
       <Cell
         title="Appearance"
-        icon="ios-color-fill"
+        icon="color-fill"
         index={1}
         maxIndex={4}
-        onPress={() => navigation.navigate('Appearance')}
+        onPress={() => navigation.push('Appearance')}
       />
       <Cell
         title="Face ID & Passcode"
-        icon="ios-finger-print"
+        icon="finger-print"
         index={3}
         maxIndex={4}
       />
       <Cell
         title="About"
-        icon="ios-at-sharp"
+        icon="at-sharp"
         index={4}
         maxIndex={4}
-        onPress={() => navigation.navigate('About')}
+        onPress={() => navigation.push('About')}
       />
     </ScrollView>
   );

@@ -97,6 +97,9 @@ const TabRoutes = () => {
               <FeedStack.Navigator>
                 <FeedStack.Group
                   screenOptions={{
+                    headerTitleStyle: {
+                      color: theme.colors.text,
+                    },
                     headerStyle: {
                       backgroundColor: theme.colors.primaryBG,
                     },
@@ -136,7 +139,16 @@ const TabRoutes = () => {
           }}
         >
           {() => (
-            <InboxStack.Navigator>
+            <InboxStack.Navigator
+              screenOptions={{
+                headerTitleStyle: {
+                  color: theme.colors.text,
+                },
+                headerStyle: {
+                  backgroundColor: theme.colors.primaryBG,
+                },
+              }}
+            >
               <InboxStack.Screen name="Inbox" component={Inbox} />
             </InboxStack.Navigator>
           )}
@@ -162,7 +174,16 @@ const TabRoutes = () => {
           }}
         >
           {() => (
-            <AccountStack.Navigator>
+            <AccountStack.Navigator
+              screenOptions={{
+                headerTitleStyle: {
+                  color: theme.colors.text,
+                },
+                headerStyle: {
+                  backgroundColor: theme.colors.primaryBG,
+                },
+              }}
+            >
               <AccountStack.Screen
                 name="Account"
                 component={Account}
@@ -193,13 +214,25 @@ const TabRoutes = () => {
           }}
         >
           {() => (
-            <SearchStack.Navigator initialRouteName="Search">
+            <SearchStack.Navigator
+              initialRouteName="Search"
+              screenOptions={{
+                headerTitleStyle: {
+                  color: theme.colors.text,
+                },
+                headerStyle: {
+                  backgroundColor: theme.colors.primaryBG,
+                },
+              }}
+            >
               <SearchStack.Group>
                 <SearchStack.Screen name="Search" component={Search} />
                 <SearchStack.Screen
                   name="Community"
                   component={CommunityScreen}
                 />
+                <SearchStack.Screen name="Account" component={AccountTemp} />
+                <SearchStack.Screen name="Post" component={Post} />
               </SearchStack.Group>
             </SearchStack.Navigator>
           )}
@@ -220,7 +253,16 @@ const TabRoutes = () => {
           }}
         >
           {() => (
-            <SettingsStack.Navigator>
+            <SettingsStack.Navigator
+              screenOptions={{
+                headerTitleStyle: {
+                  color: theme.colors.text,
+                },
+                headerStyle: {
+                  backgroundColor: theme.colors.primaryBG,
+                },
+              }}
+            >
               <SettingsStack.Screen name="Settings" component={Settings} />
               <SettingsStack.Screen name="Appearance" component={Appearance} />
               <SettingsStack.Screen name="About" component={About} />

@@ -56,7 +56,7 @@ const CommunityCell = memo(
         alignItems="center"
         onPress={() => {
           if (listType) setActiveType(listType);
-          navigation.navigate(icon ? 'Home' : 'Community', {
+          navigation.push(icon ? 'Home' : 'Community', {
             title: community?.name ?? title,
             community,
           });

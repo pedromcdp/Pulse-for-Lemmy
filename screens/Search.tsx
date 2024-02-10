@@ -1,14 +1,15 @@
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTheme } from '@shopify/restyle';
 import type { CommunityView } from 'lemmy-js-client';
 import React, { useLayoutEffect } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet } from 'react-native';
+import { ActivityIndicator, FlatList } from 'react-native';
 
 import { Cell } from '@/components/cells';
 import { Box } from '@/components/core/Box';
 import { Text } from '@/components/core/Text';
 import { useListComunites } from '@/hooks/useGetComunites';
 import { useAppearanceStore } from '@/stores/AppearanceStore';
-import theme from '@/theme/theme';
+import type { Theme } from '@/theme/theme';
 
 interface ISearchProps {
   navigation: NativeStackNavigationProp<any, any>;
@@ -16,6 +17,7 @@ interface ISearchProps {
 
 const SearchScreen = ({ navigation }: ISearchProps) => {
   const { systemFont } = useAppearanceStore((state) => state.settings);
+  const theme = useTheme<Theme>();
   const { data: trendingCommunities, isLoading } = useListComunites({
     type_: 'All',
     sort: 'TopDay',
@@ -56,12 +58,13 @@ const SearchScreen = ({ navigation }: ISearchProps) => {
     <Cell
       title={item.community.name}
       subtitle={item.community.actor_id.split('//')[1]?.split('/')[0]}
-      icon="ios-trending-up"
+      icon="trending-up"
       index={index}
       maxIndex={4}
       onPress={() => {
-        navigation.navigate('Community', {
-          title: item.community.title,
+        navigation.push('Community', {
+          title: item.community.name,
+          community: item.community,
         });
       }}
     />
@@ -75,7 +78,12 @@ const SearchScreen = ({ navigation }: ISearchProps) => {
 
   return (
     <FlatList
-      style={styles.container}
+      style={{
+        flex: 1,
+        backgroundColor: theme.colors.secondaryBG,
+        paddingHorizontal: theme.spacing.l,
+        paddingVertical: theme.spacing.xxl,
+      }}
       data={trendingCommunities}
       ListHeaderComponent={() => (
         <Text
@@ -95,14 +103,5 @@ const SearchScreen = ({ navigation }: ISearchProps) => {
     />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.secondaryBG,
-    paddingHorizontal: theme.spacing.xl,
-    paddingVertical: theme.spacing.xxl,
-  },
-});
 
 export default SearchScreen;

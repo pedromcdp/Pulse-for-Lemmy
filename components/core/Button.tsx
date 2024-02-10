@@ -11,6 +11,7 @@ import {
   spacing,
   useRestyle,
 } from '@shopify/restyle';
+import React from 'react';
 import { Pressable } from 'react-native';
 
 import type { Theme } from '@/theme/theme';
@@ -31,14 +32,21 @@ const restyleFunctions = composeRestyleFunctions<Theme, RestyleProps>([
 type Props = RestyleProps & {
   onPress?: () => void;
   onPressIn?: () => void;
+  onPressOut?: () => void;
   children?: React.ReactNode;
 };
 
-const Button = ({ onPress, onPressIn, children, ...rest }: Props) => {
+const Button = ({
+  onPress,
+  onPressIn,
+  onPressOut,
+  children,
+  ...rest
+}: Props) => {
   const props = useRestyle(restyleFunctions, rest);
 
   return (
-    <Pressable onPress={onPress} onPressIn={onPressIn}>
+    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
       <Box {...props}>{children}</Box>
     </Pressable>
   );

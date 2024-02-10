@@ -77,18 +77,18 @@ const AccountTemp = ({ navigation, route }: IAccountProps) => {
   const cellItem: ICellItem[] = [
     {
       title: 'Posts',
-      icon: 'ios-albums-outline',
-      onPress: () => navigation.navigate('Posts', { title: 'Posts' }),
+      icon: 'albums-outline',
+      onPress: () => navigation.push('Posts', { title: 'Posts' }),
     },
     {
       title: 'Comments',
-      icon: 'ios-chatbubble-outline',
-      onPress: () => navigation.navigate('Comments', { title: 'Comments' }),
+      icon: 'chatbubble-outline',
+      onPress: () => navigation.push('Comments', { title: 'Comments' }),
     },
     {
       title: 'Saved',
-      icon: 'ios-bookmark-outline',
-      onPress: () => navigation.navigate('SavedPosts', { title: 'Saved' }),
+      icon: 'bookmark-outline',
+      onPress: () => navigation.push('SavedPosts', { title: 'Saved' }),
     },
   ];
 

@@ -12,24 +12,25 @@ interface ICellProps {
   title: string;
   subtitle?: string;
   icon?:
-    | 'ios-people-outline'
-    | 'ios-chatbubbles-outline'
-    | 'ios-planet-outline'
-    | 'ios-people-circle-outline'
-    | 'ios-people-circle-sharp'
-    | 'ios-planet-sharp'
-    | 'ios-chatbubbles-sharp'
-    | 'ios-chatbubble-outline'
-    | 'ios-bookmark-outline'
-    | 'ios-chatbubbles'
-    | 'ios-people'
-    | 'ios-planet'
-    | 'ios-people-circle'
-    | 'ios-trending-up'
-    | 'ios-list'
-    | 'ios-albums-outline'
-    | 'ios-chatbubbles-outline'
-    | 'ios-cog';
+    | 'people-outline'
+    | 'chatbubbles-outline'
+    | 'planet-outline'
+    | 'people-circle-outline'
+    | 'people-circle-sharp'
+    | 'planet-sharp'
+    | 'chatbubbles-sharp'
+    | 'chatbubble-outline'
+    | 'bookmark-outline'
+    | 'chatbubbles'
+    | 'people'
+    | 'planet'
+    | 'people-circle'
+    | 'trending-up'
+    | 'list'
+    | 'albums-outline'
+    | 'chatbubbles-outline'
+    | 'cog'
+    | 'color-fill';
   index?: number;
   maxIndex?: number;
   onPress?: () => void;
@@ -58,7 +59,7 @@ const Cell = memo(
         width="100%"
         paddingLeft="l"
         alignItems="center"
-        backgroundColor="white"
+        backgroundColor="primaryBG"
         borderTopStartRadius={index === 0 ? 'm' : undefined}
         borderTopEndRadius={index === 0 ? 'm' : undefined}
         borderBottomEndRadius={index === maxIndex ? 'm' : undefined}
@@ -97,6 +98,7 @@ const Cell = memo(
           <Box>
             <Text
               variant="default"
+              color="text"
               paddingBottom="xxs"
               allowFontScaling={systemFont}
             >
@@ -114,7 +116,7 @@ const Cell = memo(
           </Box>
           {!customRight ? (
             <Ionicons
-              name="ios-chevron-forward"
+              name="chevron-forward"
               size={20}
               color={theme.colors.gray}
             />

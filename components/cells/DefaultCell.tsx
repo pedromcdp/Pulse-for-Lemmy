@@ -35,7 +35,7 @@ const DefaultCell = ({ community, index }: ICellProps) => {
         });
       }}
     >
-      <Ionicons name="ios-trending-up" size={23} color={theme.colors.blue} />
+      <Ionicons name="trending-up" size={23} color={theme.colors.blue} />
       <Box
         flexDirection="row"
         alignItems="center"
@@ -55,11 +55,7 @@ const DefaultCell = ({ community, index }: ICellProps) => {
             {community.community.actor_id.split('//')[1]?.split('/')[0]}
           </Text>
         </Box>
-        <Ionicons
-          name="ios-chevron-forward"
-          size={20}
-          color={theme.colors.gray}
-        />
+        <Ionicons name="chevron-forward" size={20} color={theme.colors.gray} />
       </Box>
     </Button>
   );

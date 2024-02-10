@@ -10,12 +10,16 @@ interface AppearanceStore {
 interface AppearanceSettings {
   showIcons: boolean;
   systemFont: boolean;
+  systemColorMode: boolean;
+  // darkMode: boolean;
 }
 
 export const useAppearanceStore = create<AppearanceStore>((set) => ({
   settings: {
     showIcons: false,
     systemFont: false,
+    systemColorMode: false,
+    // darkMode: false,
   },
   setSettings: (settings: AppearanceSettings) => {
     set({ settings });

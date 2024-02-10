@@ -7,7 +7,6 @@ import * as Haptics from 'expo-haptics';
 import type { PostView } from 'lemmy-js-client';
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import {
-  ActionSheetIOS,
   ActivityIndicator,
   Dimensions,
   RefreshControl,
@@ -16,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { SFSymbol } from 'react-native-sfsymbols';
 
 import PostCell from '@/components/cells/PostCell';
@@ -59,13 +59,19 @@ const Home = ({ navigation, route }: IHomeProps) => {
         showSearchHeader ? (
           <TextInput
             autoFocus
+            spellCheck={false}
+            autoCorrect={false}
             placeholder="Comunity..."
             allowFontScaling={false}
             keyboardType="ascii-capable"
+            autoComplete="off"
+            textContentType="none"
+            returnKeyType="go"
             placeholderTextColor={theme.colors.gray}
             style={{
               fontSize: 17,
               marginBottom: theme.spacing.xxxxs,
+              color: theme.colors.text,
             }}
           />
         ) : (
@@ -109,55 +115,138 @@ const Home = ({ navigation, route }: IHomeProps) => {
           </Button>
         ) : (
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <TouchableOpacity
-              onPressIn={() => {
-                ActionSheetIOS.showActionSheetWithOptions(
+            <ContextMenuButton
+              isMenuPrimaryAction
+              internalCleanupMode={true}
+              onPressMenuItem={(item) => {
+                console.log(item.nativeEvent.actionKey);
+              }}
+              menuConfig={{
+                menuTitle: 'Sort by...',
+                menuItems: [
                   {
-                    options: [
-                      'Cancel',
-                      'Active',
-                      'Hot',
-                      'New',
-                      'Old',
-                      'Top',
-                      'Most Comments',
-                      'New Comments',
-                    ],
-                    cancelButtonIndex: 0,
-                    message: 'Sort by...',
+                    menuState: activeSort === 'Hot' ? 'on' : 'off',
+                    actionKey: 'hot',
+                    actionTitle: 'Hot',
+                    icon: {
+                      iconType: 'SYSTEM',
+                      iconValue: 'flame',
+                      iconTint: theme.colors.accent,
+                    },
                   },
-                  (buttonIndex) => {
-                    if (buttonIndex === 1) {
-                      //
-                    }
-                  }
-                );
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  {
+                    actionKey: 'active',
+                    actionTitle: 'Active',
+                    icon: {
+                      iconType: 'SYSTEM',
+                      iconValue: 'bolt',
+                      iconTint: theme.colors.accent,
+                    },
+                  },
+                  {
+                    actionKey: 'new',
+                    actionTitle: 'New',
+                    icon: {
+                      iconType: 'SYSTEM',
+                      iconValue: 'timer',
+                      iconTint: theme.colors.accent,
+                    },
+                  },
+                ],
               }}
             >
-              <SFSymbol
-                name="flame"
-                weight="light"
-                scale="small"
-                color={theme.colors.accent}
-                size={30}
-                resizeMode="center"
-                multicolor={false}
-                style={{ width: 30, height: 30 }}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <SFSymbol
-                name="ellipsis"
-                weight="light"
-                scale="small"
-                color={theme.colors.accent}
-                size={30}
-                resizeMode="center"
-                multicolor={false}
-                style={{ width: 30, height: 30 }}
-              />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPressIn={() => {
+                  //   ActionSheetIOS.showActionSheetWithOptions(
+                  //     {
+                  //       options: [
+                  //         'Cancel',
+                  //         'Active',
+                  //         'Hot',
+                  //         'New',
+                  //         'Old',
+                  //         'Top',
+                  //         'Most Comments',
+                  //         'New Comments',
+                  //       ],
+                  //       cancelButtonIndex: 0,
+                  //       message: 'Sort by...',
+                  //     },
+                  //     (buttonIndex) => {
+                  //       if (buttonIndex === 1) {
+                  //         //
+                  //       }
+                  //     }
+                  //   );
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                }}
+              >
+                <SFSymbol
+                  name="flame"
+                  weight="light"
+                  scale="small"
+                  color={theme.colors.accent}
+                  size={30}
+                  resizeMode="center"
+                  multicolor={false}
+                  style={{ width: 30, height: 30 }}
+                />
+              </TouchableOpacity>
+            </ContextMenuButton>
+            <ContextMenuButton
+              isMenuPrimaryAction
+              internalCleanupMode={true}
+              menuConfig={{
+                menuTitle: '',
+                type: 'menu',
+                menuItems: [
+                  {
+                    actionKey: 'key-01',
+                    actionTitle: 'Hide Read Posts',
+                    icon: {
+                      iconType: 'SYSTEM',
+                      iconValue: 'eye.slash',
+                      iconTint: theme.colors.accent,
+                    },
+                  },
+                  {
+                    actionKey: 'key-02',
+                    actionTitle: 'Compact View',
+                    icon: {
+                      iconType: 'SYSTEM',
+                      iconValue: 'rectangle.grid.1x2',
+                      iconTint: theme.colors.accent,
+                    },
+                  },
+                  {
+                    actionKey: 'key-03',
+                    actionTitle: 'Share',
+                    icon: {
+                      iconType: 'SYSTEM',
+                      iconValue: 'square.and.arrow.up',
+                      iconTint: theme.colors.accent,
+                    },
+                  },
+                ],
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                }}
+              >
+                <SFSymbol
+                  name="ellipsis"
+                  weight="light"
+                  scale="small"
+                  color={theme.colors.accent}
+                  size={30}
+                  resizeMode="center"
+                  multicolor={false}
+                  style={{ width: 30, height: 30 }}
+                />
+              </TouchableOpacity>
+            </ContextMenuButton>
           </View>
         ),
       headerSearchBarOptions: {
@@ -201,7 +290,7 @@ const Home = ({ navigation, route }: IHomeProps) => {
           top={0}
           bg="black"
           zIndex={1}
-          opacity={0.5}
+          opacity={0.45}
         />
       ) : null}
       <FlashList
@@ -220,13 +309,11 @@ const Home = ({ navigation, route }: IHomeProps) => {
           // }
         }}
         onEndReachedThreshold={0.5}
+        canCancelContentTouches={true}
+        removeClippedSubviews
       />
     </Box>
   );
 };
 
 export default Home;
-
-// Search Results
-
-/*  */

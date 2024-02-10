@@ -1,17 +1,18 @@
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTheme } from '@shopify/restyle';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import React, { useCallback, useLayoutEffect } from 'react';
-import { ActivityIndicator, Alert, FlatList, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, FlatList } from 'react-native';
 
 import { Cell } from '@/components/cells';
 import Button from '@/components/core/Button';
 import { Text } from '@/components/core/Text';
 import { useGetUserDetails } from '@/hooks/useGetUser';
 import { useAccountsStore } from '@/stores/AccountsStore';
-import theme from '@/theme/theme';
+import type { Theme } from '@/theme/theme';
 
 interface IAccountProps {
   navigation: NativeStackNavigationProp<any, any>;
@@ -21,20 +22,9 @@ const Account = ({ navigation }: IAccountProps) => {
   dayjs.extend(customParseFormat);
   dayjs.extend(relativeTime);
   dayjs.extend(advancedFormat);
-  const { activeAccount } = useAccountsStore((state) => state);
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: activeAccount?.username ?? 'Account',
-      headerLeft: () => (
-        <Button>
-          <Text color="blue" fontSize={17} allowFontScaling={false}>
-            Accounts
-          </Text>
-        </Button>
-      ),
-    });
-  });
-  const { data, isLoading } = useGetUserDetails(
+  const theme = useTheme<Theme>();
+  const activeAccount = useAccountsStore((state) => state.activeAccount);
+  const { data, isLoading, refetch, isError } = useGetUserDetails(
     activeAccount?.jwt,
     activeAccount?.username
   );
@@ -47,6 +37,19 @@ const Account = ({ navigation }: IAccountProps) => {
   );
   const formattedResult = `${daysSinceAccountCreation}d`;
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: activeAccount?.username ?? 'Account',
+      headerLeft: () => (
+        <Button>
+          <Text color="blue" fontSize={17} allowFontScaling={false}>
+            Accounts
+          </Text>
+        </Button>
+      ),
+    });
+  }, [navigation, activeAccount]);
+
   if (!activeAccount) {
     return (
       <Text variant="default" textAlign="center" paddingVertical="l">
@@ -55,7 +58,7 @@ const Account = ({ navigation }: IAccountProps) => {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || isError) {
     return <ActivityIndicator style={{ paddingVertical: theme.spacing.l }} />;
   }
 
@@ -76,10 +79,10 @@ const Account = ({ navigation }: IAccountProps) => {
   interface ICellItem {
     title: string;
     icon:
-      | 'ios-albums-outline'
-      | 'ios-chatbubbles-outline'
-      | 'ios-chatbubble-outline'
-      | 'ios-bookmark-outline';
+      | 'albums-outline'
+      | 'chatbubbles-outline'
+      | 'chatbubble-outline'
+      | 'bookmark-outline';
     onPress?: () => void;
   }
   const headerData: IHeaderData[] = [
@@ -109,25 +112,25 @@ const Account = ({ navigation }: IAccountProps) => {
   const cellItem: ICellItem[] = [
     {
       title: 'Posts',
-      icon: 'ios-albums-outline',
-      onPress: () => navigation.navigate('Posts', { title: 'Posts' }),
+      icon: 'albums-outline',
+      onPress: () => navigation.push('Posts', { title: 'Posts' }),
     },
     {
       title: 'Comments',
-      icon: 'ios-chatbubble-outline',
-      onPress: () => navigation.navigate('Comments', { title: 'Comments' }),
+      icon: 'chatbubble-outline',
+      onPress: () => navigation.push('Comments', { title: 'Comments' }),
     },
     {
       title: 'Saved',
-      icon: 'ios-bookmark-outline',
-      onPress: () => navigation.navigate('SavedPosts', { title: 'Saved' }),
+      icon: 'bookmark-outline',
+      onPress: () => navigation.push('SavedPosts', { title: 'Saved' }),
     },
   ];
 
   const renderHeaderItem = useCallback(({ item }: IRenderItemsProps) => {
     return (
       <Button onPress={item.onPress} flexDirection="column" alignItems="center">
-        <Text fontWeight="500" fontSize={23} mb="xs">
+        <Text fontWeight="500" fontSize={23} mb="xs" color="text">
           {item.value}
         </Text>
         <Text color="gray" fontWeight="500">
@@ -154,15 +157,25 @@ const Account = ({ navigation }: IAccountProps) => {
 
   return (
     <FlatList
+      // Remove the refreshControl prop
       ListHeaderComponent={() => (
         <FlatList
           data={headerData}
           renderItem={renderHeaderItem}
-          style={styles.header}
+          style={{
+            justifyContent: 'space-around',
+            flexDirection: 'row',
+            marginBottom: theme.spacing.xxl,
+          }}
           keyExtractor={(item) => item.title}
         />
       )}
-      style={styles.container}
+      style={{
+        flex: 1,
+        backgroundColor: theme.colors.secondaryBG,
+        paddingHorizontal: theme.spacing.l,
+        paddingTop: theme.spacing.xl,
+      }}
       data={cellItem}
       keyExtractor={(item) => item.title}
       renderItem={renderCellItem}
@@ -171,17 +184,3 @@ const Account = ({ navigation }: IAccountProps) => {
 };
 
 export default Account;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.secondaryBG,
-    paddingHorizontal: theme.spacing.l,
-    paddingTop: theme.spacing.xl,
-  },
-  header: {
-    justifyContent: 'space-around',
-    flexDirection: 'row',
-    marginBottom: theme.spacing.xxl,
-  },
-});

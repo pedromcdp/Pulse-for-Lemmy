@@ -49,7 +49,14 @@ const Appearance = () => {
         index={0}
         maxIndex={0}
         smallPadding
-        customRight={<Switch />}
+        customRight={
+          <Switch
+            value={settings.systemColorMode}
+            onValueChange={(value) =>
+              setSettings({ ...settings, systemColorMode: value })
+            }
+          />
+        }
       />
 
       <Text

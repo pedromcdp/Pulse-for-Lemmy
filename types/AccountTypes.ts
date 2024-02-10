@@ -15,9 +15,9 @@ export interface IRenderCellProps {
 export interface ICellItem {
   title: string;
   icon:
-    | 'ios-albums-outline'
-    | 'ios-chatbubbles-outline'
-    | 'ios-chatbubble-outline'
-    | 'ios-bookmark-outline';
+    | 'albums-outline'
+    | 'chatbubbles-outline'
+    | 'chatbubble-outline'
+    | 'bookmark-outline';
   onPress?: () => void;
 }

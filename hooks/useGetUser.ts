@@ -23,7 +23,7 @@ export const useGetUserDetails = (
       return response;
     },
     {
-      enabled: !!username,
+      enabled: username !== undefined,
     }
   );
 };

@@ -103,10 +103,7 @@ export const useGetAllPosts = (
             sort,
             type_,
           ]);
-          if (!posts) {
-            return true;
-          }
-          if (pageParam === 1) {
+          if (!posts || pageParam === 1) {
             return true;
           }
           const currentPosts = posts.pages

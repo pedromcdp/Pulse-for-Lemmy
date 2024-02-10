@@ -5,11 +5,16 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '@shopify/restyle';
 import dayjs from 'dayjs';
 import UpdateLocate from 'dayjs/plugin/updateLocale';
+import * as Haptics from 'expo-haptics';
 import type { PostView } from 'lemmy-js-client';
 import React, { memo, useMemo, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
 import type { OnLoadEvent } from 'react-native-fast-image';
 import FastImage from 'react-native-fast-image';
+import {
+  ContextMenuButton,
+  ContextMenuView,
+} from 'react-native-ios-context-menu';
 import { SFSymbol } from 'react-native-sfsymbols';
 
 import { ExtensionType, getLinkInfo } from '@/helpers/LinkHelper';
@@ -118,8 +123,8 @@ const PostCell = memo(
               mb={isCommunityItem ? 'xs' : 's'}
               onPress={() =>
                 isCommunityItem
-                  ? navigation.navigate('Account', { user: item.creator })
-                  : navigation.navigate('Community', {
+                  ? navigation.push('Account', { user: item.creator })
+                  : navigation.push('Community', {
                       title: item.community.name,
                       community: item.community,
                     })
@@ -228,27 +233,120 @@ const PostCell = memo(
             </Box>
           </Box>
           <Box flexDirection="row">
-            <Button
-              mt="s"
-              width={30}
-              height={30}
-              justifyContent="center"
-              alignItems="center"
-              // backgroundColor="red"
-              borderRadius="s"
-              mr="xs"
+            <ContextMenuButton
+              isMenuPrimaryAction
+              onPressMenuItem={({ nativeEvent }) => {
+                switch (nativeEvent.actionKey) {
+                  case 'user':
+                    navigation.push('Account', { user: item.creator });
+                    break;
+                  case 'community':
+                    navigation.push('Community', {
+                      title: item.community.name,
+                      community: item.community,
+                    });
+                    break;
+                  default:
+                    break;
+                }
+              }}
+              menuConfig={{
+                menuTitle: '',
+                menuItems: [
+                  {
+                    actionKey: 'upvote',
+                    actionTitle: 'Upvote',
+                    icon: {
+                      iconType: 'SYSTEM',
+                      iconValue: 'arrow.up',
+                    },
+                  },
+                  {
+                    actionKey: 'downvote',
+                    actionTitle: 'Downvote',
+                    icon: {
+                      iconType: 'SYSTEM',
+                      iconValue: 'arrow.down',
+                    },
+                  },
+                  {
+                    actionKey: 'save',
+                    actionTitle: 'Save',
+                    icon: {
+                      iconType: 'SYSTEM',
+                      iconValue: 'bookmark',
+                    },
+                  },
+                  {
+                    actionKey: 'hide',
+                    actionTitle: 'Hide',
+                    icon: {
+                      iconType: 'SYSTEM',
+                      iconValue: 'eye.slash',
+                    },
+                  },
+                  {
+                    actionKey: 'user',
+                    actionTitle: item.creator.name,
+                    icon: {
+                      iconType: 'SYSTEM',
+                      iconValue: 'person.crop.circle',
+                    },
+                  },
+                  {
+                    actionKey: 'community',
+                    actionTitle: `${item.community.name}@${
+                      item.community.actor_id.split('//')[1]!.split('/')[0]
+                    }`,
+                    icon: {
+                      iconType: 'SYSTEM',
+                      iconValue: 'person.2',
+                    },
+                  },
+                  {
+                    actionKey: 'share',
+                    actionTitle: 'Share',
+                    icon: {
+                      iconType: 'SYSTEM',
+                      iconValue: 'square.and.arrow.up',
+                    },
+                  },
+                  {
+                    actionKey: 'report',
+                    actionTitle: 'Report',
+                    icon: {
+                      iconType: 'SYSTEM',
+                      iconValue: 'exclamationmark.bubble',
+                    },
+                  },
+                ],
+              }}
             >
-              <SFSymbol
-                name="ellipsis"
-                weight="medium"
-                scale="large"
-                color={theme.colors.gray}
-                size={15}
-                resizeMode="center"
-                multicolor={false}
-                style={{ width: 30, height: 30 }}
-              />
-            </Button>
+              <Button
+                mt="s"
+                width={30}
+                height={30}
+                justifyContent="center"
+                alignItems="center"
+                // backgroundColor="red"
+                borderRadius="s"
+                mr="xs"
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                }}
+              >
+                <SFSymbol
+                  name="ellipsis"
+                  weight="medium"
+                  scale="large"
+                  color={theme.colors.gray}
+                  size={15}
+                  resizeMode="center"
+                  multicolor={false}
+                  style={{ width: 30, height: 30 }}
+                />
+              </Button>
+            </ContextMenuButton>
             <Button
               mt="s"
               width={30}
@@ -323,80 +421,170 @@ const PostCell = memo(
 
     return (
       <Box flexDirection="column">
-        <Button
-          backgroundColor="cellColor"
-          py="m"
-          onPress={() =>
-            navigation.navigate('Post', {
-              id: item.post.id,
-              title: item.counts.comments,
-              item,
-            })
-          }
+        <ContextMenuView
+          shouldWaitForMenuToHideBeforeFiringOnPressMenuItem={false}
+          onPressMenuItem={({ nativeEvent }) => {
+            switch (nativeEvent.actionKey) {
+              case 'user':
+                navigation.push('Account', { user: item.creator });
+                break;
+              case 'community':
+                navigation.push('Community', {
+                  title: item.community.name,
+                  community: item.community,
+                });
+                break;
+              default:
+                break;
+            }
+          }}
+          menuConfig={{
+            menuTitle: '',
+            menuItems: [
+              {
+                actionKey: 'upvote',
+                actionTitle: 'Upvote',
+                icon: {
+                  iconType: 'SYSTEM',
+                  iconValue: 'arrow.up',
+                },
+              },
+              {
+                actionKey: 'downvote',
+                actionTitle: 'Downvote',
+                icon: {
+                  iconType: 'SYSTEM',
+                  iconValue: 'arrow.down',
+                },
+              },
+              {
+                actionKey: 'save',
+                actionTitle: 'Save',
+                icon: {
+                  iconType: 'SYSTEM',
+                  iconValue: 'bookmark',
+                },
+              },
+              {
+                actionKey: 'hide',
+                actionTitle: 'Hide',
+                icon: {
+                  iconType: 'SYSTEM',
+                  iconValue: 'eye.slash',
+                },
+              },
+              {
+                actionKey: 'user',
+                actionTitle: item.creator.name,
+                icon: {
+                  iconType: 'SYSTEM',
+                  iconValue: 'person.crop.circle',
+                },
+              },
+              {
+                actionKey: 'community',
+                actionTitle: `${item.community.name}@${
+                  item.community.actor_id.split('//')[1]!.split('/')[0]
+                }`,
+                icon: {
+                  iconType: 'SYSTEM',
+                  iconValue: 'person.2',
+                },
+              },
+              {
+                actionKey: 'share',
+                actionTitle: 'Share',
+                icon: {
+                  iconType: 'SYSTEM',
+                  iconValue: 'square.and.arrow.up',
+                },
+              },
+              {
+                actionKey: 'report',
+                actionTitle: 'Report',
+                icon: {
+                  iconType: 'SYSTEM',
+                  iconValue: 'exclamationmark.bubble',
+                },
+              },
+            ],
+          }}
         >
-          <Text
-            variant="default"
-            allowFontScaling={systemFont}
-            color={item.read ? 'gray' : 'text'}
-            px="l"
+          <Button
+            backgroundColor="cellColor"
+            py="m"
+            onPress={() =>
+              navigation.push('Post', {
+                id: item.post.id,
+                title: item.counts.comments,
+                item,
+              })
+            }
           >
-            {item.post.name}{' '}
-          </Text>
-          {/* NFSW TAG */}
-          {item.post.nsfw && (
-            <Box
-              mt="xxs"
-              backgroundColor="red"
-              py="xxs"
-              borderRadius={'ss'}
-              width={45}
-              mx="l"
-              flexGrow={0}
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Text fontSize={14} color="white" fontWeight="500">
-                NSFW
-              </Text>
-            </Box>
-          )}
-          {isImage && (
-            <Box position="relative" mt="s">
-              {image}
-              {thumbnailUrl!.split('.').pop() === 'gif' && (
-                <Box
-                  position="absolute"
-                  backgroundColor="white"
-                  px="s"
-                  py="xs"
-                  borderRadius="s"
-                  bottom={theme.spacing.s}
-                  right={theme.spacing.s}
-                  opacity={0.95}
-                >
-                  <Text fontWeight="500" fontSize={16}>
-                    GIF
-                  </Text>
-                </Box>
-              )}
-            </Box>
-          )}
-          {item.post.body && (
             <Text
-              px="l"
-              mt={isImage ? 'm' : 's'}
-              variant="subtitle"
-              color="subtitle"
+              variant="default"
               allowFontScaling={systemFont}
+              color={item.read ? 'gray' : 'text'}
+              px="l"
             >
-              {item.post.body.substring(0, 100)}...
+              {item.post.name}{' '}
             </Text>
-          )}
-          {showLink && (
-            <LinkItem link={url.link!} thumbnail={item.post.thumbnail_url} />
-          )}
-          <Footer />
-        </Button>
+            {/* NFSW TAG */}
+            {item.post.nsfw && (
+              <Box
+                mt="xxs"
+                backgroundColor="red"
+                py="xxs"
+                borderRadius={'ss'}
+                width={45}
+                mx="l"
+                flexGrow={0}
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Text fontSize={14} color="white" fontWeight="500">
+                  NSFW
+                </Text>
+              </Box>
+            )}
+            {isImage && (
+              <Box position="relative" mt="s">
+                {image}
+                {thumbnailUrl!.split('.').pop() === 'gif' && (
+                  <Box
+                    position="absolute"
+                    backgroundColor="white"
+                    px="s"
+                    py="xs"
+                    borderRadius="s"
+                    bottom={theme.spacing.s}
+                    right={theme.spacing.s}
+                    opacity={0.95}
+                  >
+                    <Text fontWeight="500" fontSize={16}>
+                      GIF
+                    </Text>
+                  </Box>
+                )}
+              </Box>
+            )}
+            {item.post.body && (
+              <Text
+                px="l"
+                mt={isImage ? 'm' : 's'}
+                variant="subtitle"
+                color="subtitle"
+                allowFontScaling={systemFont}
+              >
+                {item.post.body.substring(0, 100)}...
+              </Text>
+            )}
+            {showLink && (
+              <LinkItem link={url.link!} thumbnail={item.post.thumbnail_url} />
+            )}
+            <Footer />
+          </Button>
+        </ContextMenuView>
         <Box
           py="xs"
           backgroundColor="secondaryBG"

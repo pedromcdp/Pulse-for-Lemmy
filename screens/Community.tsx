@@ -81,12 +81,6 @@ const CommunityScreen = ({ navigation, route }: ICommunityProps) => {
               multicolor={false}
               style={{ width: 17, height: 17, marginTop: 2 }}
             />
-            {/* <Ionicons
-            name="ios-chevron-down-sharp"
-            size={17}
-            color={theme.colors.text}
-            style={{ marginTop: 2 }}
-          /> */}
           </Button>
         ),
       headerShadowVisible: false,
@@ -164,7 +158,7 @@ const CommunityScreen = ({ navigation, route }: ICommunityProps) => {
 
   useEffect(() => {
     FastImage.clearMemoryCache();
-  }, []);
+  }, [navigation]);
 
   const renderEmpty = useCallback(() => {
     return (

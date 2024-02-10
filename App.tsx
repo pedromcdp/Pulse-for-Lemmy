@@ -9,11 +9,14 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useColorScheme } from 'react-native';
 
 import { Box } from './components/core/Box';
 import TabRoutes from './navigation/TabController';
 import { connect } from './services/LemmyService';
 import { useAccountsStore } from './stores/AccountsStore';
+import { useAppearanceStore } from './stores/AppearanceStore';
+import darkTheme from './theme/DarkTheme';
 import theme from './theme/theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -22,6 +25,8 @@ export default function App() {
   dayjs.extend(customParseFormat);
   dayjs.extend(relativeTime);
   dayjs.extend(advancedFormat);
+  const systemColoScheme = useColorScheme();
+  const { settings } = useAppearanceStore((state) => state);
   const { setActiveAccount, addAccount } = useAccountsStore();
   const [queryClient] = useState(
     () =>
@@ -71,10 +76,13 @@ export default function App() {
   if (!loaded) {
     return null;
   }
+
+  const whatTheme = settings.systemColorMode ? systemColoScheme : 'light';
+
   return (
     <Box flex={1} onLayout={onLayoutRootView}>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={whatTheme === 'dark' ? darkTheme : theme}>
           <NavigationContainer>
             <TabRoutes />
           </NavigationContainer>
